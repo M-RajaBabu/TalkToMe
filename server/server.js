@@ -70,6 +70,15 @@ app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/streak', streakRoutes);
 
+// Serve static files from React build
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../dist')));
+
+// Catch-all route to serve index.html for React Router
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+});
+
 console.log('ALL ENV:', process.env);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
