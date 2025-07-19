@@ -79,6 +79,11 @@ app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile(path.join(__dirname, '../dist', 'index.html'));
 });
 
+// Debug: log all registered route paths
+console.log('Registered routes:', app._router.stack
+  .filter(r => r.route)
+  .map(r => r.route.path));
+
 console.log('ALL ENV:', process.env);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
