@@ -201,7 +201,7 @@ const ProgressPage = () => {
             </CardContent>
           </Card>
         </SlideUp>
-
+        
         <div className="grid grid-cols-2 gap-4 mb-6">
           <SlideUp delay={200}>
             <Card>

@@ -6,7 +6,7 @@ const router = express.Router();
 const ChatMessage = require('../models/ChatMessage');
 const UserStreak = require('../models/UserStreak');
 
-const JWT_SECRET = 'your_jwt_secret'; // Change this to a strong secret in production
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Middleware to verify JWT
 function authenticateToken(req, res, next) {

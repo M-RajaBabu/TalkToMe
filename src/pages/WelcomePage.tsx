@@ -48,11 +48,11 @@ const WelcomePage = ({ isLoggedIn }: WelcomePageProps) => {
         <div className="flex flex-col gap-3 w-full mb-6">
           <Button asChild size="lg" className="w-full">
             <Link to="/login">{t('Log in')}</Link>
-          </Button>
+            </Button>
           <Button asChild variant="outline" size="lg" className="w-full">
             <Link to="/signup">{t('Create account')}</Link>
-          </Button>
-        </div>
+            </Button>
+          </div>
       </div>
     </div>
   );
