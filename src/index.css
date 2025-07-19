@@ -1,0 +1,95 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 260 60% 99%;
+    --foreground: 260 10% 10%;
+
+    --card: 260 40% 98%;
+    --card-foreground: 260 10% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 260 10% 10%;
+
+    --primary: 263 84% 50%;
+    --primary-foreground: 260 10% 98%;
+
+    --secondary: 173 86% 31%;
+    --secondary-foreground: 173 10% 98%;
+
+    --accent: 35 92% 50%;
+    --accent-foreground: 35 10% 15%;
+
+    --muted: 260 10% 92%;
+    --muted-foreground: 260 10% 45%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 260 10% 85%;
+    --input: 260 10% 85%;
+    --ring: 260 84% 50%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 260 25% 10%;
+    --foreground: 260 10% 95%;
+
+    --card: 260 25% 12%;
+    --card-foreground: 260 10% 95%;
+
+    --popover: 260 25% 12%;
+    --popover-foreground: 260 10% 95%;
+
+    --primary: 263 70% 60%;
+    --primary-foreground: 260 10% 98%;
+
+    --secondary: 173 70% 40%;
+    --secondary-foreground: 173 10% 98%;
+
+    --accent: 35 80% 55%;
+    --accent-foreground: 35 10% 15%;
+
+    --muted: 260 25% 18%;
+    --muted-foreground: 260 10% 70%;
+
+    --destructive: 0 62.8% 40.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 260 25% 25%;
+    --input: 260 25% 25%;
+    --ring: 260 70% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  /* Custom component styling */
+  .language-card {
+    @apply relative overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 
+           border border-border bg-card text-card-foreground rounded-lg hover:-translate-y-1;
+  }
+
+  .chat-bubble-user {
+    @apply bg-primary-100 text-foreground rounded-2xl rounded-br-none px-4 py-2 max-w-[85%] shadow-sm;
+  }
+
+  .chat-bubble-ai {
+    @apply bg-secondary-100 text-foreground rounded-2xl rounded-bl-none px-4 py-2 max-w-[85%] shadow-sm;
+  }
+
+  .glass-effect {
+    @apply backdrop-blur-md bg-background/90 border border-border;
+  }
+}
