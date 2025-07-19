@@ -8,8 +8,6 @@ import ChatBubble from "@/components/chat/ChatBubble";
 import AppHeader from "@/components/layout/AppHeader";
 import { ChatMessage, Language, LanguagePreference, InputMode, Database } from "@/types";
 import { v4 as uuidv4 } from "uuid";
-import { supabase } from "@/integrations/supabase/client";
-import { User } from "@supabase/supabase-js";
 import { Mic, Keyboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -196,48 +194,7 @@ const ChatPage = () => {
     }
   };
   
-  // Update language pair usage statistics
-  const updateLanguagePairStats = async () => {
-    if (!userEmail || !languagePreference) return;
-    
-    try {
-      const { data, error } = await supabase
-        .from('language_pair_stats')
-        .select('*')
-        .eq('user_id', userEmail)
-        .eq('source_lang', languagePreference.sourceLanguage)
-        .eq('target_lang', languagePreference.targetLanguage)
-        .single();
-      
-      if (error && error.code !== 'PGRST116') {
-        throw error;
-      }
-      
-      if (!data) {
-        // First time using this language pair
-        await supabase
-          .from('language_pair_stats')
-          .insert({
-            user_id: userEmail,
-            source_lang: languagePreference.sourceLanguage,
-            target_lang: languagePreference.targetLanguage,
-            use_count: 1,
-            last_used: new Date().toISOString(),
-          });
-      } else {
-        // Update existing record
-        await supabase
-          .from('language_pair_stats')
-          .update({
-            use_count: data.use_count + 1,
-            last_used: new Date().toISOString(),
-          })
-          .eq('id', data.id);
-      }
-    } catch (error) {
-      console.error("Error updating language pair stats:", error);
-    }
-  };
+  // Removed the entire updateLanguagePairStats function since it only used supabase
   
   const getWelcomeMessage = (language: Language) => {
     switch (language) {

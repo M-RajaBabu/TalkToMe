@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft, Mail } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import FadeIn from "@/components/animations/FadeIn";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from 'react-i18next';
@@ -23,10 +22,7 @@ const LoginPage = () => {
   // Check if user is already logged in
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        navigate('/language-selection');
-      }
+      // Removed supabase.auth.getSession()
     };
     
     checkSession();
