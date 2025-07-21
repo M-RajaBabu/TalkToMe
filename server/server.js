@@ -84,9 +84,9 @@ app.get('/test', (req, res) => res.send('ok'));
 // });
 
 // Debug: log all registered route paths
-console.log('Registered routes:', app._router.stack
-  .filter(r => r.route)
-  .map(r => r.route.path));
+// console.log('Registered routes:', app._router.stack
+//   .filter(r => r.route)
+//   .map(r => r.route.path));
 
 console.log('ALL ENV:', process.env);
 const PORT = process.env.PORT || 5000;
