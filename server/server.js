@@ -75,13 +75,12 @@ app.use(express.static(path.join(__dirname, '../dist')));
 app.get('/', (req, res) => res.send('root ok'));
 app.get('/test', (req, res) => res.send('ok'));
 
-// Comment out catch-all route for now
-// app.get('*', (req, res, next) => {
-//   if (req.path.startsWith('/api') || req.path.includes('.')) {
-//     return next();
-//   }
-//   res.sendFile(path.join(__dirname, '../dist', 'index.html'));
-// });
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.includes('.')) {
+    return next();
+  }
+  res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+});
 
 // Debug: log all registered route paths
 // console.log('Registered routes:', app._router.stack
