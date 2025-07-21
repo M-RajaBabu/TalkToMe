@@ -66,22 +66,22 @@ app.get('/api/auth/google/callback',
   }
 );
 
-app.use('/api/auth', authRoutes);
-app.use('/api/chat', chatRoutes);
-app.use('/api/streak', streakRoutes);
+// Comment out all custom routes for debugging
+// app.use('/api/auth', authRoutes);
+// app.use('/api/chat', chatRoutes);
+// app.use('/api/streak', streakRoutes);
+// app.use(express.static(path.join(__dirname, '../dist')));
 
-// Serve static files from React build
-const path = require('path');
-app.use(express.static(path.join(__dirname, '../dist')));
+// Test route only
+app.get('/test', (req, res) => res.send('ok'));
 
-// Catch-all route to serve index.html for React Router (only for non-API and non-static file requests)
-app.get('*', (req, res, next) => {
-  // If the request is for an API route or a static file, skip
-  if (req.path.startsWith('/api') || req.path.includes('.')) {
-    return next();
-  }
-  res.sendFile(path.join(__dirname, '../dist', 'index.html'));
-});
+// Comment out catch-all route for now
+// app.get('*', (req, res, next) => {
+//   if (req.path.startsWith('/api') || req.path.includes('.')) {
+//     return next();
+//   }
+//   res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+// });
 
 // Debug: log all registered route paths
 console.log('Registered routes:', app._router.stack
