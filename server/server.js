@@ -72,7 +72,7 @@ app.get('/api/auth/google/callback',
 // app.use('/api/streak', streakRoutes);
 // app.use(express.static(path.join(__dirname, '../dist')));
 
-// Test route only
+app.get('/', (req, res) => res.send('root ok'));
 app.get('/test', (req, res) => res.send('ok'));
 
 // Comment out catch-all route for now
