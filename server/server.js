@@ -74,8 +74,12 @@ app.use('/api/streak', streakRoutes);
 const path = require('path');
 app.use(express.static(path.join(__dirname, '../dist')));
 
-// Catch-all route to serve index.html for React Router (only for non-API requests)
-app.get(/^\/(?!api).*/, (req, res) => {
+// Catch-all route to serve index.html for React Router (only for non-API and non-static file requests)
+app.get('*', (req, res, next) => {
+  // If the request is for an API route or a static file, skip
+  if (req.path.startsWith('/api') || req.path.includes('.')) {
+    return next();
+  }
   res.sendFile(path.join(__dirname, '../dist', 'index.html'));
 });
 
