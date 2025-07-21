@@ -10,6 +10,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const User = require('./models/User');
+const path = require('path');
 
 const app = express();
 app.use(cors({
@@ -69,7 +70,7 @@ app.get('/api/auth/google/callback',
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/streak', streakRoutes);
-// app.use(express.static(path.join(__dirname, '../dist')));
+app.use(express.static(path.join(__dirname, '../dist')));
 
 app.get('/', (req, res) => res.send('root ok'));
 app.get('/test', (req, res) => res.send('ok'));
