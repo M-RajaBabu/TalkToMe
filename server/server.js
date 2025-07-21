@@ -66,10 +66,9 @@ app.get('/api/auth/google/callback',
   }
 );
 
-// Comment out all custom routes for debugging
-// app.use('/api/auth', authRoutes);
-// app.use('/api/chat', chatRoutes);
-// app.use('/api/streak', streakRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/chat', chatRoutes);
+app.use('/api/streak', streakRoutes);
 // app.use(express.static(path.join(__dirname, '../dist')));
 
 app.get('/', (req, res) => res.send('root ok'));
