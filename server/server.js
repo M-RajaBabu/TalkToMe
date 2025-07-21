@@ -75,7 +75,7 @@ app.use(express.static(path.join(__dirname, '../dist')));
 app.get('/', (req, res) => res.send('root ok'));
 app.get('/test', (req, res) => res.send('ok'));
 
-app.get('*', (req, res, next) => {
+app.get('/*', (req, res, next) => {
   if (req.path.startsWith('/api') || req.path.includes('.')) {
     return next();
   }
