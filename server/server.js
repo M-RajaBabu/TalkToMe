@@ -75,10 +75,10 @@ app.use(express.static(path.join(__dirname, '../dist')));
 app.get('/', (req, res) => res.send('root ok'));
 app.get('/test', (req, res) => res.send('ok'));
 
-app.get(/^\/(?!api|assets|pic_of_talk_to_me\.jpg).*/, (req, res) => {
-  if (req.path.includes('.')) return;
-  res.sendFile(path.join(__dirname, '../dist', 'index.html'));
-});
+// app.get(/^\/(?!api|assets|pic_of_talk_to_me\.jpg).*/, (req, res) => {
+//   if (req.path.includes('.')) return;
+//   res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+// });
 
 // Debug: log all registered route paths
 // console.log('Registered routes:', app._router.stack
