@@ -98,7 +98,7 @@ VITE_GEMINI_API_KEY=your_gemini_api_key_here
 Create `server/.env`:
 ```env
 # Backend Environment Variables
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/talktome
+MONGODB_URI=mongodb+srv://your_username:your_password@your_cluster.mongodb.net/your_database
 GOOGLE_CLIENT_ID=your_google_oauth_client_id
 GOOGLE_CLIENT_SECRET=your_google_oauth_client_secret
 GOOGLE_CALLBACK_URL=http://localhost:5000/api/auth/google/callback
