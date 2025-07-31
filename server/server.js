@@ -10,18 +10,29 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const User = require('./models/User');
-const path = require('path');
 
 const app = express();
+
+// Enhanced CORS configuration
+const corsOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['http://localhost:8080', 'http://localhost:5173', 'http://127.0.0.1:8080', 'http://127.0.0.1:5173'];
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-  credentials: true
+  origin: corsOrigins,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 app.use(express.json());
 
-mongoose.connect(process.env.MONGODB_URI);
+// MongoDB connection using environment variable
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/talktomefluent');
 
-app.use(session({ secret: process.env.JWT_SECRET, resave: false, saveUninitialized: true }));
+app.use(session({ 
+  secret: process.env.JWT_SECRET || 'your_secret', 
+  resave: false, 
+  saveUninitialized: true 
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -63,29 +74,14 @@ app.get('/api/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
   (req, res) => {
     // Successful authentication, redirect to frontend
-    res.redirect(process.env.FRONTEND_SUCCESS_REDIRECT || 'http://localhost:8080/language-selection');
+    res.redirect('http://localhost:8080/language-selection');
   }
 );
 
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/streak', streakRoutes);
-app.use(express.static(path.join(__dirname, '../dist')));
 
-app.get('/', (req, res) => res.send('root ok'));
-app.get('/test', (req, res) => res.send('ok'));
-
-// app.get(/^\/(?!api|assets|pic_of_talk_to_me\.jpg).*/, (req, res) => {
-//   if (req.path.includes('.')) return;
-//   res.sendFile(path.join(__dirname, '../dist', 'index.html'));
-// });
-
-// Debug: log all registered route paths
-// console.log('Registered routes:', app._router.stack
-//   .filter(r => r.route)
-//   .map(r => r.route.path));
-
-console.log('ALL ENV:', process.env);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

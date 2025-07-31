@@ -6,14 +6,19 @@ import ChatHeader from "@/components/chat/ChatHeader";
 import ChatInput from "@/components/chat/ChatInput";
 import ChatBubble from "@/components/chat/ChatBubble";
 import AppHeader from "@/components/layout/AppHeader";
-import { ChatMessage, Language, LanguagePreference, InputMode, Database } from "@/types";
+import BottomNavBar from '@/components/layout/BottomNavBar';
+import { ChatMessage, Language, LanguagePreference, InputMode } from "@/types";
 import { v4 as uuidv4 } from "uuid";
-import { Mic, Keyboard } from "lucide-react";
+
+import { Mic, Keyboard, Sparkles, MessageSquare, Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Card } from "@/components/ui/card";
+import { useSpeechCleanup } from "@/hooks/use-mobile";
+import { API_ENDPOINTS, getAuthHeaders } from "@/lib/api";
 
-// Gemini API key
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+// Gemini API key from environment variable
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 
 const getUserIdFromToken = () => {
@@ -40,9 +45,9 @@ const ChatPage = () => {
   useEffect(() => {
     const email = localStorage.getItem('userEmail');
     if (!email) {
-        navigate('/login');
-        return;
-      }
+      navigate('/login');
+      return;
+    }
     setUserEmail(email);
   }, [navigate]);
   
@@ -88,8 +93,8 @@ const ChatPage = () => {
   const loadChatHistory = async (preference: LanguagePreference) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:5000/api/chat?sourceLanguage=${encodeURIComponent(preference.sourceLanguage)}&targetLanguage=${encodeURIComponent(preference.targetLanguage)}`, {
-        headers: { 'Authorization': `Bearer ${token}` },
+      const res = await fetch(`${API_ENDPOINTS.CHAT}?sourceLanguage=${encodeURIComponent(preference.sourceLanguage)}&targetLanguage=${encodeURIComponent(preference.targetLanguage)}`, {
+        headers: getAuthHeaders(token || ''),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to load chat history');
@@ -115,12 +120,9 @@ const ChatPage = () => {
     if (!userEmail || !languagePreference) return;
     try {
       const token = localStorage.getItem('token');
-      await fetch('http://localhost:5000/api/chat', {
+      await fetch(API_ENDPOINTS.CHAT, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: getAuthHeaders(token || ''),
         body: JSON.stringify({
           type: message.type,
           content: message.content,
@@ -146,8 +148,8 @@ const ChatPage = () => {
   const loadUserStreak = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/streak', {
-        headers: { 'Authorization': `Bearer ${token}` },
+      const res = await fetch(API_ENDPOINTS.STREAK, {
+        headers: getAuthHeaders(token || ''),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to load streak');
@@ -165,24 +167,21 @@ const ChatPage = () => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const lastPracticeDate = new Date(streak.lastPracticeDate);
-        lastPracticeDate.setHours(0, 0, 0, 0);
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
+      lastPracticeDate.setHours(0, 0, 0, 0);
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
       let newStreak = streak.currentStreak;
-        if (lastPracticeDate.getTime() === today.getTime()) {
-          return;
+      if (lastPracticeDate.getTime() === today.getTime()) {
+        return;
       } else if (lastPracticeDate.getTime() === yesterday.getTime()) {
-          newStreak += 1;
+        newStreak += 1;
       } else {
         newStreak = 1;
       }
       const token = localStorage.getItem('token');
-      await fetch('http://localhost:5000/api/streak', {
+      await fetch(API_ENDPOINTS.STREAK, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: getAuthHeaders(token || ''),
         body: JSON.stringify({
           currentStreak: newStreak,
           longestStreak: Math.max(newStreak, streak.longestStreak),
@@ -194,7 +193,18 @@ const ChatPage = () => {
     }
   };
   
-  // Removed the entire updateLanguagePairStats function since it only used supabase
+  // Update language pair usage statistics
+  const updateLanguagePairStats = async () => {
+    if (!userEmail || !languagePreference) return;
+    
+    try {
+      // This functionality can be implemented later with MongoDB
+      // For now, we'll just log the usage
+      console.log(`Language pair usage: ${languagePreference.sourceLanguage} -> ${languagePreference.targetLanguage}`);
+    } catch (error) {
+      console.error("Error updating language pair stats:", error);
+    }
+  };
   
   const getWelcomeMessage = (language: Language) => {
     switch (language) {
@@ -257,7 +267,7 @@ const ChatPage = () => {
     let prompt = "";
     if (chatMode === 'translate') {
       prompt = `You are a language teacher helping someone learn ${targetLanguage}. The user speaks ${sourceLanguage} and is learning ${targetLanguage}. Translate the following ${sourceLanguage} text to ${targetLanguage}: \"${content}\"`;
-    if (targetLanguage === "Telugu") {
+      if (targetLanguage === "Telugu") {
         prompt += `\nPlease provide both the Telugu script and its Romanized version in English.\nPlease respond in the following JSON format only:{\n  \"translation\": \"The translated text in Telugu script\",\n  \"romanization\": \"The romanized/phonetic version in English letters\",\n  \"grammarTip\": \"A brief grammar tip related to this phrase\", \n  \"vocabularyTips\": \"Key vocabulary words and their meanings\"\n}`;
       } else {
         prompt += `\nPlease respond in the following JSON format only:{\n  \"translation\": \"The translated text in ${targetLanguage}\",\n  \"pronunciation\": \"Pronunciation guide if applicable\",\n  \"grammarTip\": \"A brief grammar tip related to this phrase\", \n  \"vocabularyTips\": \"Key vocabulary words and their meanings\"\n}`;
@@ -372,11 +382,11 @@ const ChatPage = () => {
       if (languagePreference) {
         const voiceFeedbackEnabled = localStorage.getItem('voiceFeedbackEnabled');
         if (voiceFeedbackEnabled === null || voiceFeedbackEnabled === 'true') {
-        speakText(
-          ensureString(aiResponse.content),
+          speakText(
+            ensureString(aiResponse.content),
             languagePreference.targetLanguage === "Hindi" ? "hi-IN" :
             languagePreference.targetLanguage === "Telugu" ? "te-IN" : "en-US"
-        );
+          );
         }
       }
     } catch (error) {
@@ -425,70 +435,129 @@ const ChatPage = () => {
     };
   };
 
+  // Use the speech cleanup hook
+  useSpeechCleanup();
+
   if (!languagePreference) {
-    return <div className="p-8 text-center">Loading...</div>;
+    return (
+      <div className="min-h-screen gradient-bg flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
+            <Sparkles className="w-8 h-8 text-white animate-pulse" />
+          </div>
+          <p className="text-lg text-muted-foreground">Loading your chat...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <div className="container max-w-md mx-auto flex-1 flex flex-col h-screen">
-        <ChatHeader 
-          sourceLanguage={languagePreference.sourceLanguage} 
-          targetLanguage={languagePreference.targetLanguage}
-        />
-        
-        <div className="flex flex-col gap-2">
-          <div className="flex justify-center mb-2">
-            <ToggleGroup type="single" value={chatMode} onValueChange={v => v && setChatMode(v as 'chat' | 'translate')}>
-              <ToggleGroupItem value="chat">Chat</ToggleGroupItem>
-              <ToggleGroupItem value="translate">Translate</ToggleGroupItem>
-            </ToggleGroup>
-          </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.map((message) => (
-            <ChatBubble 
-              key={message.id} 
-              message={message} 
-              targetLanguage={languagePreference.targetLanguage} 
-                sourceLanguage={languagePreference.sourceLanguage}
-                chatMode={chatMode}
-            />
-          ))}
-          
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="bg-green-100 text-green-800 p-3 rounded-lg flex gap-1 items-center">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse delay-150"></div>
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse delay-300"></div>
-              </div>
-            </div>
-          )}
-          
-          {isSpeaking && (
-            <div className="flex justify-center my-2">
-              <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
-                <span className="animate-pulse mr-2">🔊</span> Speaking...
-              </div>
-            </div>
-          )}
-          
-          <div ref={messagesEndRef} />
-        </div>
-        
-          <div className="p-4 border-t flex flex-col gap-2">
-          <ChatInput 
-            onSendMessage={handleSendMessage} 
-              onStartVoiceInput={handleVoiceInput}
-            isLoading={isLoading || isSpeaking}
-              sourceLang={languagePreference?.sourceLanguage}
-            isVoiceMode={isVoiceMode}
-            onToggleVoiceMode={setIsVoiceMode}
-          />
-        </div>
+    <div className="min-h-screen gradient-bg relative">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 right-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl floating-animation"></div>
+        <div className="absolute bottom-20 left-10 w-40 h-40 bg-secondary/5 rounded-full blur-3xl floating-animation" style={{ animationDelay: '1s' }}></div>
       </div>
-      
-      <AppHeader className="md:hidden" />
+
+      <div className="relative z-10 min-h-screen flex flex-col">
+        <div className="container max-w-2xl mx-auto flex-1 flex flex-col h-screen">
+          <ChatHeader 
+            sourceLanguage={languagePreference.sourceLanguage} 
+            targetLanguage={languagePreference.targetLanguage}
+          />
+          
+          <div className="flex flex-col gap-4 flex-1">
+            {/* Mode Toggle with enhanced styling */}
+            <div className="flex justify-center px-4 pt-2">
+              <Card className="p-1 glass-effect">
+                <ToggleGroup 
+                  type="single" 
+                  value={chatMode} 
+                  onValueChange={v => v && setChatMode(v as 'chat' | 'translate')}
+                  className="bg-transparent"
+                >
+                  <ToggleGroupItem 
+                    value="chat" 
+                    className="flex items-center gap-2 px-4 py-2 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground rounded-md transition-all duration-300"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    Chat
+                  </ToggleGroupItem>
+                  <ToggleGroupItem 
+                    value="translate" 
+                    className="flex items-center gap-2 px-4 py-2 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground rounded-md transition-all duration-300"
+                  >
+                    <Languages className="w-4 h-4" />
+                    Translate
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              </Card>
+            </div>
+
+            {/* Messages Container */}
+            <div className="flex-1 overflow-y-auto px-4 space-y-4 pb-4">
+              {messages.map((message, index) => (
+                <div 
+                  key={message.id} 
+                  className={`slide-in-bottom`}
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <ChatBubble 
+                    message={message} 
+                    targetLanguage={languagePreference.targetLanguage} 
+                    sourceLanguage={languagePreference.sourceLanguage}
+                    chatMode={chatMode}
+                  />
+                </div>
+              ))}
+              
+              {/* Enhanced Loading Indicator */}
+              {isLoading && (
+                <div className="flex justify-start">
+                  <Card className="p-4 glass-effect">
+                    <div className="flex items-center gap-3">
+                      <div className="flex gap-1">
+                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                      </div>
+                      <span className="text-sm text-muted-foreground">AI is thinking...</span>
+                    </div>
+                  </Card>
+                </div>
+              )}
+              
+              {/* Enhanced Speaking Indicator */}
+              {isSpeaking && (
+                <div className="flex justify-center my-4">
+                  <Card className="px-4 py-2 glass-effect">
+                    <div className="flex items-center gap-2 text-primary">
+                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                      <span className="text-sm font-medium">Speaking...</span>
+                    </div>
+                  </Card>
+                </div>
+              )}
+              
+              <div ref={messagesEndRef} />
+            </div>
+            
+            {/* Enhanced Input Area */}
+            <div className="p-4 border-t border-border/50 bg-background/80 backdrop-blur-sm">
+              <ChatInput
+                onSendMessage={handleSendMessage}
+                onVoiceInput={handleVoiceInput}
+                isListening={isListening}
+                isProcessing={isLoading}
+                targetLanguage={languagePreference?.targetLanguage || "English"}
+                sourceLanguage={languagePreference?.sourceLanguage || "English"}
+              />
+            </div>
+          </div>
+          
+          <AppHeader className="md:hidden" />
+          <BottomNavBar />
+        </div>
       </div>
     </div>
   );

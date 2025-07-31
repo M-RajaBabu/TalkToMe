@@ -7,8 +7,10 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft, Mail } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+
 import FadeIn from "@/components/animations/FadeIn";
 import { Separator } from "@/components/ui/separator";
+import { API_ENDPOINTS } from "@/lib/api";
 
 const SignupPage = () => {
   const [email, setEmail] = useState("");
@@ -23,7 +25,10 @@ const SignupPage = () => {
   // Check if user is already logged in
   useEffect(() => {
     const checkSession = async () => {
-      // Removed supabase.auth.getSession
+      const token = localStorage.getItem('token');
+      if (token) {
+        navigate('/language-selection');
+      }
     };
     
     checkSession();
@@ -62,7 +67,7 @@ const SignupPage = () => {
     setIsLoading(true);
     
     try {
-      const res = await fetch('http://localhost:5000/api/auth/register', {
+      const res = await fetch(API_ENDPOINTS.REGISTER, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, phone, email, password }),
@@ -76,10 +81,12 @@ const SignupPage = () => {
       localStorage.setItem('userPhone', phone);
       
       toast({
-        title: "Account created",
-        description: "You can now log in.",
+        title: "Account created!",
+        description: "You have successfully signed up.",
+        duration: 3000,
       });
-      navigate('/login');
+      navigate('/language-selection');
+      window.location.reload();
     } catch (error: any) {
       toast({
         title: "Sign up failed",

@@ -3,6 +3,10 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useRef } from "react";
 import { ChevronLeft } from 'lucide-react';
+import BottomNavBar from '@/components/layout/BottomNavBar';
+import { useToast } from "@/components/ui/use-toast";
+import { useTranslation } from "react-i18next";
+import { useSpeechCleanup } from "@/hooks/use-mobile";
 
 // Example chapter data structure
 const chaptersData: Record<string, Array<{ title: string; level: string; description: string }>> = {
@@ -112,7 +116,7 @@ const chaptersData: Record<string, Array<{ title: string; level: string; descrip
   ],
 };
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 
 function speakText(text: string) {
@@ -158,6 +162,9 @@ const ChaptersPage = () => {
   const [translations, setTranslations] = useState<Record<number, string>>({});
   const [translating, setTranslating] = useState<Record<number, boolean>>({});
   const sourceLanguage = (location.state && location.state.sourceLanguage) || "English";
+
+  // Use the speech cleanup hook
+  useSpeechCleanup();
 
   useEffect(() => {
     if (selectedChapter !== null) {
@@ -297,6 +304,7 @@ const ChaptersPage = () => {
           </div>
         </div>
       ) : null}
+      <BottomNavBar />
     </div>
   );
 };

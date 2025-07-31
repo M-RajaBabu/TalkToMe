@@ -2,17 +2,41 @@ import { useTranslation } from 'react-i18next';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import AppHeader from '@/components/layout/AppHeader';
 import { useState } from 'react';
+import { useRef } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import BottomNavBar from '@/components/layout/BottomNavBar';
+
+const badgeInfo: Record<string, { icon: string; label: string }> = {
+  'streak-7': { icon: '🔥', label: '7-Day Streak' },
+  'messages-100': { icon: '💬', label: '100 Messages' },
+  'voice-1': { icon: '🎤', label: 'First Voice Chat' },
+};
 
 const ProfilePage = () => {
   const { t } = useTranslation();
   const userEmail = localStorage.getItem('userEmail') || t('No email found');
-  // Placeholder for name and other details
   const userName = localStorage.getItem('userName') || t('No name set');
   const userPhone = localStorage.getItem('userPhone') || t('No phone set');
-  // Password section (masked, with toggle)
   const [showPassword, setShowPassword] = useState(false);
-  // In a real app, never store password in localStorage; here we use a placeholder
   const userPassword = 'password123'; // Placeholder only
+  // XP/Level (mock)
+  const [xp] = useState(320);
+  const [level] = useState(3);
+  // Avatar (mock)
+  const [avatar, setAvatar] = useState('/pic_of_talk_to_me.jpg');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  // Bio (mock)
+  const [bio, setBio] = useState('Aspiring polyglot. Love learning new languages!');
+  // Badges (mock)
+  const [badges] = useState(['streak-7', 'messages-100']);
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const url = URL.createObjectURL(e.target.files[0]);
+      setAvatar(url);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -23,6 +47,21 @@ const ProfilePage = () => {
             <CardTitle>{t('Account Information')}</CardTitle>
           </CardHeader>
           <CardContent>
+            {/* Avatar upload/selection */}
+            <div className="flex items-center gap-4 mb-4">
+              <img src={avatar} alt="Avatar" className="w-16 h-16 rounded-full border shadow" />
+              <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>Change Avatar</Button>
+              <input type="file" accept="image/*" ref={fileInputRef} className="hidden" onChange={handleAvatarChange} />
+            </div>
+            {/* Bio editing */}
+            <div className="mb-4">
+              <div className="font-medium">Bio:</div>
+              <textarea className="w-full border rounded p-2 text-sm text-foreground bg-background" value={bio} onChange={e => setBio(e.target.value)} placeholder="Add a short bio..." />
+            </div>
+            <div className="mb-4">
+              <div className="font-medium">Level:</div>
+              <div className="text-muted-foreground">{level} (XP: {xp})</div>
+            </div>
             <div className="mb-4">
               <div className="font-medium">{t('Name')}:</div>
               <div className="text-muted-foreground">{userName}</div>
@@ -39,7 +78,7 @@ const ProfilePage = () => {
               <div className="font-medium">{t('Password')}:</div>
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground">
-                  {showPassword ? userPassword : '••••••••'}
+                  {showPassword ? userPassword : '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022'}
                 </span>
                 <button
                   type="button"
@@ -50,9 +89,23 @@ const ProfilePage = () => {
                 </button>
               </div>
             </div>
+            {/* Achievements/Badges */}
+            <div className="mb-4">
+              <div className="font-medium mb-1">Achievements:</div>
+              <div className="flex gap-2 flex-wrap">
+                {badges.length === 0 && <span>No badges yet</span>}
+                {badges.map(badge => (
+                  <Badge key={badge} className="flex items-center gap-1 px-2 py-1">
+                    <span>{badgeInfo[badge]?.icon || '🏅'}</span>
+                    <span>{badgeInfo[badge]?.label || badge}</span>
+                  </Badge>
+                ))}
+              </div>
+            </div>
           </CardContent>
         </Card>
         <AppHeader className="md:hidden" />
+        <BottomNavBar />
       </div>
     </div>
   );

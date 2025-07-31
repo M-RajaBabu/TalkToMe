@@ -1,7 +1,7 @@
 
 import { cn } from "@/lib/utils";
 import { ChatMessage } from "@/types";
-import { Info, Volume2, VolumeX } from "lucide-react";
+import { Info, Volume2, VolumeX, MessageSquare, User, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 import {
   Tooltip,
@@ -10,8 +10,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useSpeechCleanup } from "@/hooks/use-mobile";
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 
 interface ChatBubbleProps {
@@ -31,6 +33,9 @@ const ChatBubble = ({ message, targetLanguage = "English", sourceLanguage = "Eng
   const isUser = message.type === "user";
   const hasFeedback = !!message.grammarFeedback || !!message.vocabularyTips;
   const hasRomanization = !!message.romanization && targetLanguage === "Telugu";
+
+  // Use the speech cleanup hook
+  useSpeechCleanup();
 
   // Ensure content is always rendered as a string
   const ensureString = (content: any): string => {
@@ -99,104 +104,161 @@ const ChatBubble = ({ message, targetLanguage = "English", sourceLanguage = "Eng
   return (
     <div
       className={cn(
-        "my-2 flex",
+        "my-3 flex items-end gap-2",
         isUser ? "justify-end" : "justify-start"
       )}
     >
-      <div className="flex flex-col max-w-[80%]">
-        <div className={cn(
-          "p-3 rounded-lg",
+      {/* Avatar for AI messages */}
+      {!isUser && (
+        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center flex-shrink-0">
+          <Sparkles className="w-4 h-4 text-white" />
+        </div>
+      )}
+      
+      <div className={cn(
+        "flex flex-col max-w-[85%]",
+        isUser ? "items-end" : "items-start"
+      )}>
+        {/* Message bubble */}
+        <Card className={cn(
+          "p-4 rounded-2xl shadow-lg backdrop-blur-sm border-0",
           isUser 
-            ? "bg-blue-100 text-blue-800" // User message (blue)
-            : "bg-green-100 text-green-800" // AI message (green)
+            ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground" 
+            : "bg-gradient-to-r from-secondary to-secondary/80 text-secondary-foreground"
         )}>
-          <p className="whitespace-pre-wrap">{messageContent}</p>
-          
-          {/* Show romanization for Telugu responses */}
-          {hasRomanization && !isUser && (
-            <div className="mt-2 pt-2 border-t border-green-200">
-              <p className="text-sm">
-                <span className="font-semibold">Pronunciation:</span> {romanization}
-              </p>
-            </div>
-          )}
-          
-          {chatMode === 'chat' && !isUser && !showTranslation && (
-            <Button
-              size="sm"
-              variant="outline"
-              className="mt-2"
-              onClick={handleTranslate}
-              disabled={translating}
-            >
-              {translating ? "Translating..." : `Translate to ${sourceLanguage}`}
-            </Button>
-          )}
-          {showTranslation && (
-            <div className="bg-white border rounded p-2 text-sm text-gray-700 mt-2">
-              <strong>Translation:</strong> {translation}
-            </div>
-          )}
-          
-          <div className="flex items-center justify-between mt-2 text-xs">
-            <span className="text-muted-foreground">
-              {new Date(message.timestamp).toLocaleTimeString([], { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-              })}
-            </span>
+          <div className="flex items-start gap-2">
+            {isUser && (
+              <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <User className="w-3 h-3 text-white" />
+              </div>
+            )}
             
-            <div className="flex items-center gap-2">
-              {/* Voice playback button */}
-              <button 
-                onClick={handleSpeakMessage}
-                className="p-1 hover:bg-white/20 rounded-full flex items-center"
-                aria-label={isSpeaking ? "Stop speaking" : "Speak text"}
-              >
-                {isSpeaking ? (
-                  <VolumeX className="w-3.5 h-3.5 text-red-500" />
-                ) : (
-                  <Volume2 className="w-3.5 h-3.5 text-muted-foreground" />
-                )}
-              </button>
+            <div className="flex-1">
+              <p className="whitespace-pre-wrap leading-relaxed">{messageContent}</p>
               
-              {/* Feedback toggle button */}
-              {hasFeedback && !isUser && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button 
-                        onClick={() => setShowFeedback(!showFeedback)}
-                        className="flex items-center gap-1 hover:text-foreground transition-colors"
-                      >
-                        <Info className="w-3.5 h-3.5" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Click to view feedback</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+              {/* Show romanization for Telugu responses */}
+              {hasRomanization && !isUser && (
+                <div className="mt-3 pt-3 border-t border-white/20">
+                  <p className="text-sm opacity-90">
+                    <span className="font-semibold">Pronunciation:</span> {romanization}
+                  </p>
+                </div>
+              )}
+              
+              {/* Translation button and result */}
+              {chatMode === 'chat' && !isUser && !showTranslation && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="mt-3 bg-white/20 border-white/30 text-white hover:bg-white/30"
+                  onClick={handleTranslate}
+                  disabled={translating}
+                >
+                  {translating ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Translating...
+                    </div>
+                  ) : (
+                    `Translate to ${sourceLanguage}`
+                  )}
+                </Button>
+              )}
+              
+              {showTranslation && (
+                <Card className="mt-3 p-3 bg-white/10 border-white/20">
+                  <p className="text-sm">
+                    <span className="font-semibold">Translation:</span> {translation}
+                  </p>
+                </Card>
               )}
             </div>
           </div>
+        </Card>
+        
+        {/* Message metadata */}
+        <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+          <span>
+            {new Date(message.timestamp).toLocaleTimeString([], { 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            })}
+          </span>
+          
+          <div className="flex items-center gap-1">
+            {/* Voice playback button */}
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleSpeakMessage}
+              className="h-6 w-6 p-0 hover:bg-primary/10"
+              aria-label={isSpeaking ? "Stop speaking" : "Speak text"}
+            >
+              {isSpeaking ? (
+                <VolumeX className="w-3 h-3 text-destructive" />
+              ) : (
+                <Volume2 className="w-3 h-3" />
+              )}
+            </Button>
+            
+            {/* Feedback toggle button */}
+            {hasFeedback && !isUser && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setShowFeedback(!showFeedback)}
+                      className="h-6 w-6 p-0 hover:bg-primary/10"
+                    >
+                      <Info className="w-3 h-3" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>View feedback</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
         </div>
         
+        {/* Feedback section */}
         {showFeedback && hasFeedback && !isUser && (
-          <div className="mt-1 text-sm">
+          <div className="mt-3 space-y-2 w-full">
             {message.grammarFeedback && (
-              <div className="bg-blue-50 text-blue-800 p-2 rounded-md mb-1">
-                <span className="font-semibold">Grammar:</span> {ensureString(message.grammarFeedback)}
-              </div>
+              <Card className="p-3 bg-blue-50/80 border-blue-200/50">
+                <div className="flex items-start gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div>
+                    <p className="text-xs font-semibold text-blue-700 mb-1">Grammar Tip</p>
+                    <p className="text-sm text-blue-800">{ensureString(message.grammarFeedback)}</p>
+                  </div>
+                </div>
+              </Card>
             )}
             {message.vocabularyTips && (
-              <div className="bg-amber-50 text-amber-800 p-2 rounded-md">
-                <span className="font-semibold">Vocabulary:</span> {ensureString(message.vocabularyTips)}
-              </div>
+              <Card className="p-3 bg-amber-50/80 border-amber-200/50">
+                <div className="flex items-start gap-2">
+                  <div className="w-2 h-2 bg-amber-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div>
+                    <p className="text-xs font-semibold text-amber-700 mb-1">Vocabulary Tip</p>
+                    <p className="text-sm text-amber-800">{ensureString(message.vocabularyTips)}</p>
+                  </div>
+                </div>
+              </Card>
             )}
           </div>
         )}
       </div>
+      
+      {/* Avatar for user messages */}
+      {isUser && (
+        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center flex-shrink-0">
+          <User className="w-4 h-4 text-white" />
+        </div>
+      )}
     </div>
   );
 };

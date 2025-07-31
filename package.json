@@ -1,12 +1,14 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "talk-to-me-fluent",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "author": "Raja Babu Meena",
+  "license": "MIT",
+  "description": "Interactive language learning application with AI-powered tutoring",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "postinstall": "cd server && npm install",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -40,7 +42,7 @@
     "@radix-ui/react-toggle": "^1.1.0",
     "@radix-ui/react-toggle-group": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.4",
-    "@supabase/supabase-js": "^2.49.4",
+
     "@tanstack/react-query": "^5.56.2",
     "@types/uuid": "^9.0.8",
     "class-variance-authority": "^0.7.1",
@@ -79,7 +81,7 @@
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
-    "lovable-tagger": "^1.1.7",
+
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.11",
     "typescript": "^5.5.3",

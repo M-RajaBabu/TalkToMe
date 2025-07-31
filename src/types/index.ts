@@ -1,5 +1,5 @@
 
-export type Language = 'Hindi' | 'Telugu' | 'English';
+export type Language = 'Hindi' | 'Telugu' | 'Kannada' | 'Tamil' | 'English' | 'Spanish' | 'French' | 'German' | 'Chinese' | 'Japanese' | 'Russian' | 'Arabic' | 'Portuguese' | 'Italian' | 'Korean';
 export type DifficultyLevel = 'Beginner' | 'Intermediate' | 'Advanced';
 export type InputMode = 'text' | 'voice';
 

@@ -6,14 +6,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import AppHeader from "@/components/layout/AppHeader";
 import { Language } from "@/types";
-import { LogOut, Volume2, ChevronLeft } from "lucide-react";
+import { LogOut, Volume2, ChevronLeft, User, BarChart2, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import FadeIn from "@/components/animations/FadeIn";
 import { Link, useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useTranslation } from 'react-i18next';
 import { Input } from "@/components/ui/input";
+import { API_ENDPOINTS, getAuthHeaders } from "@/lib/api";
 
 const languages: Language[] = ["Hindi", "Telugu", "English"];
 
@@ -76,8 +77,8 @@ const SettingsPage = () => {
     setIsProcessing(true);
     try {
       const token = localStorage.getItem('token');
-      await fetch('http://localhost:5000/api/chat/all', { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
-      await fetch('http://localhost:5000/api/streak/all', { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+      await fetch(API_ENDPOINTS.CHAT_ALL, { method: 'DELETE', headers: getAuthHeaders(token || '') });
+      await fetch(API_ENDPOINTS.STREAK_ALL, { method: 'DELETE', headers: getAuthHeaders(token || '') });
       // Clear cached progress in localStorage
       localStorage.removeItem('languagePreference');
       // Optionally clear other progress-related keys if used
@@ -96,7 +97,7 @@ const SettingsPage = () => {
     setIsProcessing(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/chat?sourceLanguage=&targetLanguage=', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`${API_ENDPOINTS.CHAT}?sourceLanguage=&targetLanguage=`, { headers: getAuthHeaders(token || '') });
       const data = await res.json();
       const csv = [
         ['Type', 'Content', 'Timestamp'],
@@ -123,7 +124,7 @@ const SettingsPage = () => {
     setIsProcessing(true);
     try {
       const token = localStorage.getItem('token');
-      await fetch('http://localhost:5000/api/auth/delete', { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+      await fetch(API_ENDPOINTS.DELETE_ACCOUNT, { method: 'DELETE', headers: getAuthHeaders(token || '') });
       localStorage.removeItem('token');
       localStorage.removeItem('userEmail');
       toast({ title: "Account deleted", description: "Your account and all data have been deleted." });
@@ -141,9 +142,9 @@ const SettingsPage = () => {
     setIsProcessing(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/auth/change-email', {
+      const res = await fetch(API_ENDPOINTS.CHANGE_EMAIL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        headers: getAuthHeaders(token || ''),
         body: JSON.stringify({ newEmail }),
       });
       const data = await res.json();
@@ -167,9 +168,9 @@ const SettingsPage = () => {
     setIsProcessing(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/auth/change-password', {
+      const res = await fetch(API_ENDPOINTS.CHANGE_PASSWORD, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        headers: getAuthHeaders(token || ''),
         body: JSON.stringify({ currentPassword, newPassword }),
       });
       const data = await res.json();
@@ -180,6 +181,17 @@ const SettingsPage = () => {
       toast({ title: t('Error'), description: error.message || t('Failed to change password'), variant: 'destructive' });
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const userName = localStorage.getItem('userName') || 'User';
+  const userEmail = localStorage.getItem('userEmail') || 'user@example.com';
+  const [avatar, setAvatar] = useState('/pic_of_talk_to_me.jpg');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const url = URL.createObjectURL(e.target.files[0]);
+      setAvatar(url);
     }
   };
 
@@ -195,80 +207,85 @@ const SettingsPage = () => {
         </button>
         <h1 className="text-2xl font-bold mt-4 mb-6">{t('Settings')}</h1>
         
-        {/* Remove the App Preferences card section entirely */}
-        
+        {/* Profile Card */}
+        <div className="flex items-center gap-4 mb-6 bg-card rounded-lg shadow p-4">
+          <img src={avatar} alt="Avatar" className="w-14 h-14 rounded-full border shadow" />
+          <div className="flex-1">
+            <div className="font-bold text-lg">{userName}</div>
+            <div className="text-muted-foreground text-sm">{userEmail}</div>
+                </div>
+          <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>Change</Button>
+          <input type="file" accept="image/*" ref={fileInputRef} className="hidden" onChange={handleAvatarChange} />
+              </div>
+        {/* Account Section */}
         <FadeIn delay={100}>
           <Card className="mb-6">
             <CardHeader>
               <CardTitle>{t('Account')}</CardTitle>
-              <CardDescription>
-                {t('Manage your account settings')}
-              </CardDescription>
+              <CardDescription>{t('Manage your account settings')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-medium">{t('Email')}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {localStorage.getItem('userEmail') || 'user@example.com'}
-                  </p>
+                  <p className="text-sm text-muted-foreground">{userEmail}</p>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => setShowEmailDialog(true)}>
-                  {t('Change')}
-                </Button>
+                <Button variant="outline" size="sm" onClick={() => setShowEmailDialog(true)}>{t('Change')}</Button>
               </div>
-              
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-medium">{t('Password')}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    ••••••••
-                  </p>
+                  <p className="text-sm text-muted-foreground">••••••••</p>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => setShowPasswordDialog(true)}>
-                  {t('Change')}
-                </Button>
+                <Button variant="outline" size="sm" onClick={() => setShowPasswordDialog(true)}>{t('Change')}</Button>
               </div>
-              
               <div className="pt-4">
-                <Button 
-                  asChild
-                  variant="outline" 
-                  size="sm" 
-                  className="w-full text-muted-foreground hover:text-destructive hover:border-destructive"
-                >
-                  <Link to="/language-selection">
-                    {t('Reset language preferences')}
-                  </Link>
+                <Button asChild variant="outline" size="sm" className="w-full text-muted-foreground hover:text-destructive hover:border-destructive">
+                  <Link to="/language-selection">{t('Reset language preferences')}</Link>
                 </Button>
               </div>
             </CardContent>
           </Card>
         </FadeIn>
-        
-        {/* Remove the Progress & Data card section. Place Reset Progress and Delete Account buttons directly below Account section. */}
+        {/* Voice Feedback & Interface Language */}
+        <FadeIn delay={150}>
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>{t('Preferences')}</CardTitle>
+              <CardDescription>{t('Customize your app experience')}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="voice-feedback">{t('Voice Feedback')}</Label>
+                <Switch id="voice-feedback" checked={voiceFeedback} onCheckedChange={handleVoiceFeedbackChange} />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="interface-lang">{t('Interface Language')}</Label>
+                <Select value={interfaceLang} onValueChange={handleInterfaceLangChange}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {interfaceLanguages.map(lang => (
+                      <SelectItem key={lang.code} value={lang.code}>{lang.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+        </FadeIn>
+        {/* Export, Reset, Delete, Logout */}
         <FadeIn delay={200}>
-              <Button 
-            variant="destructive" 
-            className="w-full mb-4"
-            onClick={() => setShowDeleteDialog(true)}
-            disabled={isProcessing}
-          >
-            <LogOut className="mr-2 h-4 w-4" /> {t('Delete Account')}
-              </Button>
-          <Button 
-            variant="destructive" 
-            className="w-full mb-4"
-            onClick={handleLogout}
-            disabled={isProcessing}
-          >
-            <LogOut className="mr-2 h-4 w-4" /> {t('Log out')}
-          </Button>
+          <Button variant="outline" className="w-full mb-4" onClick={handleExport} disabled={isProcessing}>{t('Export Practice History')}</Button>
+          <Button variant="destructive" className="w-full mb-4" onClick={handleReset} disabled={isProcessing}>{t('Reset Progress')}</Button>
+          <Button variant="destructive" className="w-full mb-4" onClick={() => setShowDeleteDialog(true)} disabled={isProcessing}><LogOut className="mr-2 h-4 w-4" /> {t('Delete Account')}</Button>
+          <Button variant="destructive" className="w-full mb-4" onClick={handleLogout} disabled={isProcessing}><LogOut className="mr-2 h-4 w-4" /> {t('Log out')}</Button>
         </FadeIn>
         
+        {/* Bottom spacing to prevent overlap with auto-hiding footer */}
+        <div className="h-24"></div>
       </div>
-      
-      <AppHeader className="md:hidden" />
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogTitle>{t('Delete Account')}</DialogTitle>
