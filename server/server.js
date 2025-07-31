@@ -78,6 +78,16 @@ app.get('/api/auth/google/callback',
   }
 );
 
+// Health check route
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Talk to Me Fluent Backend API', 
+    status: 'running',
+    timestamp: new Date().toISOString(),
+    version: '1.0.0'
+  });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/streak', streakRoutes);
