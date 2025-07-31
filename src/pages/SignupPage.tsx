@@ -200,7 +200,7 @@ const SignupPage = () => {
               type="button" 
               variant="outline" 
               className="w-full mt-4" 
-              onClick={() => window.location.href = 'https://982972c8f1f7.ngrok-free.app/api/auth/google'}
+              onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`}
             >
               <Mail className="mr-2 h-4 w-4" />
               Continue with Google
