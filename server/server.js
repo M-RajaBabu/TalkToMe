@@ -74,7 +74,8 @@ app.get('/api/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
   (req, res) => {
     // Successful authentication, redirect to frontend
-    res.redirect('http://localhost:8080/language-selection');
+    const frontendUrl = process.env.FRONTEND_URL || 'https://talk-to-me-puce.vercel.app';
+    res.redirect(`${frontendUrl}/language-selection`);
   }
 );
 
