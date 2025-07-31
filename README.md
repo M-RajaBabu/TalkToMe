@@ -10,6 +10,7 @@
 
 **Revolutionizing Language Learning Through AI-Powered Conversations** 🚀
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20App-blue?style=for-the-badge&logo=vercel)](https://talk-to-me-puce.vercel.app)
 [![Deploy on Vercel](https://img.shields.io/badge/Deploy%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com)
 [![Deploy on Render](https://img.shields.io/badge/Deploy%20on-Render-46E3B7?style=for-the-badge&logo=render)](https://render.com)
 
@@ -20,6 +21,50 @@
 ## ✨ What Makes This Special?
 
 **Talk to Me Fluent** is not just another language learning app—it's your personal AI language tutor that adapts to your learning style. Imagine having a conversation partner who never gets tired, speaks 20+ languages, and remembers every mistake you've ever made to help you improve.
+
+## 🖼️ Application Showcase
+
+### 🏠 **Homepage & Welcome Experience**
+![Homepage Welcome](public/Readme%20file%20Pics/Home1.png)
+*Welcome to Talk to Me Fluent - Your AI-powered language learning journey starts here with an intuitive and modern interface.*
+
+![Homepage Features](public/Readme%20file%20Pics/Home2.png)
+*Discover the power of AI-driven language learning with interactive features and personalized experiences.*
+
+### 🔐 **Authentication & User Management**
+![Create Account](public/Readme%20file%20Pics/CreateAccount.png)
+*Seamless account creation with secure authentication and user-friendly registration process.*
+
+![Sign In](public/Readme%20file%20Pics/SignIn.png)
+*Quick and secure sign-in with multiple authentication options including Google OAuth integration.*
+
+### 🌍 **Language Selection & Learning Paths**
+![Choose Language](public/Readme%20file%20Pics/ChooseLanguageSection.png)
+*Select from multiple languages and customize your learning experience with our comprehensive language selection interface.*
+
+![Chapters for Each Language](public/Readme%20file%20Pics/Chapters%20for%20Each%20Language.png)
+*Structured learning with organized chapters for each language, making your learning journey systematic and effective.*
+
+### 📊 **Advanced Learning Analytics**
+![Learning Analytics](public/Readme%20file%20Pics/Learning%20Analytics.png)
+*Track your progress with detailed analytics, monitor your learning patterns, and visualize your language learning journey.*
+
+### 🤖 **AI-Powered Learning Features**
+![Advanced Section and AI Learning Paths](public/Readme%20file%20Pics/Advance%20Section%20and%20Ai%20learning%20Paths.png)
+*Advanced AI learning paths that adapt to your progress and provide personalized learning experiences.*
+
+![Private AI Lessons](public/Readme%20file%20Pics/Private%20Ai%20lessons.png)
+*One-on-one AI tutoring sessions with personalized feedback and adaptive learning strategies.*
+
+### 🎵 **Music Learning Integration**
+![Music Learning](public/Readme%20file%20Pics/music%20learning.png)
+*Learn languages through music with our innovative music learning feature that combines entertainment with education.*
+
+### ⚙️ **Settings & Customization**
+![Settings Section](public/Readme%20file%20Pics/Setting%20Section.png)
+*Customize your learning experience with comprehensive settings and preferences management.*
+
+## 🎯 **Key Features Highlighted**
 
 ### 🎯 Core Features
 
