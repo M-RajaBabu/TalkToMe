@@ -5,8 +5,6 @@ import { useNavigate } from "react-router-dom";
 import ChatHeader from "@/components/chat/ChatHeader";
 import ChatInput from "@/components/chat/ChatInput";
 import ChatBubble from "@/components/chat/ChatBubble";
-import AppHeader from "@/components/layout/AppHeader";
-import BottomNavBar from '@/components/layout/BottomNavBar';
 import { ChatMessage, Language, LanguagePreference, InputMode } from "@/types";
 import { v4 as uuidv4 } from "uuid";
 
@@ -555,8 +553,7 @@ const ChatPage = () => {
             </div>
           </div>
           
-          <AppHeader className="md:hidden" />
-          <BottomNavBar />
+
         </div>
       </div>
     </div>

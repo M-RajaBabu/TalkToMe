@@ -21,7 +21,7 @@ const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/
 
 ```typescript
 // ❌ Bad: Hardcoding API keys
-const GEMINI_API_KEY = "AIzaSyBgj3wA1VTtYyvWhd43k1CCeF0rsFd7yRE";
+const GEMINI_API_KEY = "your_actual_api_key_here";
 ```
 
 ## Environment Variables Setup

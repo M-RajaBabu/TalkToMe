@@ -118,54 +118,54 @@
 - **Git** for version control
 
 ### 1. Clone & Setup
-```bash
+   ```bash
 # Clone the repository
 git clone https://github.com/M-RajaBabu/talk-to-me-fluent-main.git
-cd talk-to-me-fluent-main
+   cd talk-to-me-fluent-main
 
 # Install dependencies
-npm install
+   npm install
 cd server && npm install && cd ..
 ```
 
 ### 2. Environment Configuration
-
-Create `.env` in the root directory:
-```env
+   
+   Create `.env` in the root directory:
+   ```env
 # Frontend Environment Variables
-VITE_API_URL=http://localhost:5000
-VITE_APP_NAME=Talk to Me Fluent
-VITE_APP_VERSION=1.0.0
-VITE_DEV_MODE=true
+   VITE_API_URL=http://localhost:5000
+   VITE_APP_NAME=Talk to Me Fluent
+   VITE_APP_VERSION=1.0.0
+   VITE_DEV_MODE=true
 VITE_GEMINI_API_KEY=your_gemini_api_key_here
-```
+   ```
 
-Create `server/.env`:
-```env
+   Create `server/.env`:
+   ```env
 # Backend Environment Variables
 MONGODB_URI=mongodb+srv://your_username:your_password@your_cluster.mongodb.net/your_database
-GOOGLE_CLIENT_ID=your_google_oauth_client_id
-GOOGLE_CLIENT_SECRET=your_google_oauth_client_secret
-GOOGLE_CALLBACK_URL=http://localhost:5000/api/auth/google/callback
+   GOOGLE_CLIENT_ID=your_google_oauth_client_id
+   GOOGLE_CLIENT_SECRET=your_google_oauth_client_secret
+   GOOGLE_CALLBACK_URL=http://localhost:5000/api/auth/google/callback
 SESSION_SECRET=your_secure_session_secret
-CORS_ORIGINS=http://localhost:8080,http://localhost:5173
-PORT=5000
-NODE_ENV=development
+   CORS_ORIGINS=http://localhost:8080,http://localhost:5173
+   PORT=5000
+   NODE_ENV=development
 GEMINI_API_KEY=your_gemini_api_key_here
-```
+   ```
 
 ### 3. Start Development Servers
 
 **Terminal 1 - Backend:**
-```bash
-cd server
+   ```bash
+   cd server
 npm run dev
-```
+   ```
 
 **Terminal 2 - Frontend:**
-```bash
-npm run dev
-```
+   ```bash
+   npm run dev
+   ```
 
 ### 4. Open Your Browser
 - 🌐 **Frontend**: http://localhost:8080
@@ -181,7 +181,7 @@ npm run dev
 VITE_GEMINI_API_KEY=your_api_key_here
 
 # ❌ Bad: Hardcoding in source code
-const API_KEY = "AIzaSyBgj3wA1VTtYyvWhd43k1CCeF0rsFd7yRE";
+const API_KEY = "your_actual_api_key_here";
 ```
 
 ### Environment Variables Checklist

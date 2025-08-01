@@ -6,6 +6,9 @@ import { useRef } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import BottomNavBar from '@/components/layout/BottomNavBar';
+import { Input } from '@/components/ui/input';
+import { Edit2, Save, X } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const badgeInfo: Record<string, { icon: string; label: string }> = {
   'streak-7': { icon: '🔥', label: '7-Day Streak' },
@@ -15,9 +18,10 @@ const badgeInfo: Record<string, { icon: string; label: string }> = {
 
 const ProfilePage = () => {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const userEmail = localStorage.getItem('userEmail') || t('No email found');
-  const userName = localStorage.getItem('userName') || t('No name set');
-  const userPhone = localStorage.getItem('userPhone') || t('No phone set');
+  const [userName, setUserName] = useState(localStorage.getItem('userName') || t('No name set'));
+  const [userPhone, setUserPhone] = useState(localStorage.getItem('userPhone') || t('No phone set'));
   const [showPassword, setShowPassword] = useState(false);
   const userPassword = 'password123'; // Placeholder only
   // XP/Level (mock)
@@ -30,11 +34,63 @@ const ProfilePage = () => {
   const [bio, setBio] = useState('Aspiring polyglot. Love learning new languages!');
   // Badges (mock)
   const [badges] = useState(['streak-7', 'messages-100']);
+  
+  // Edit states
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [isEditingPhone, setIsEditingPhone] = useState(false);
+  const [editName, setEditName] = useState(userName);
+  const [editPhone, setEditPhone] = useState(userPhone);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const url = URL.createObjectURL(e.target.files[0]);
       setAvatar(url);
+    }
+  };
+
+  const handleSaveName = () => {
+    if (editName.trim()) {
+      setUserName(editName);
+      localStorage.setItem('userName', editName);
+      setIsEditingName(false);
+      toast({
+        title: "Success",
+        description: "Name updated successfully!",
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Name cannot be empty!",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSavePhone = () => {
+    if (editPhone.trim()) {
+      setUserPhone(editPhone);
+      localStorage.setItem('userPhone', editPhone);
+      setIsEditingPhone(false);
+      toast({
+        title: "Success",
+        description: "Phone number updated successfully!",
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Phone number cannot be empty!",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCancelEdit = (type: 'name' | 'phone') => {
+    if (type === 'name') {
+      setEditName(userName);
+      setIsEditingName(false);
+    } else {
+      setEditPhone(userPhone);
+      setIsEditingPhone(false);
     }
   };
 
@@ -63,16 +119,84 @@ const ProfilePage = () => {
               <div className="text-muted-foreground">{level} (XP: {xp})</div>
             </div>
             <div className="mb-4">
-              <div className="font-medium">{t('Name')}:</div>
-              <div className="text-muted-foreground">{userName}</div>
+              <div className="font-medium flex items-center justify-between">
+                {t('Name')}:
+                {!isEditingName && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsEditingName(true)}
+                    className="h-6 w-6 p-0"
+                  >
+                    <Edit2 className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
+              {isEditingName ? (
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="flex-1"
+                    placeholder="Enter your name"
+                  />
+                  <Button size="sm" onClick={handleSaveName} className="h-8 px-2">
+                    <Save className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleCancelEdit('name')}
+                    className="h-8 px-2"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="text-muted-foreground">{userName}</div>
+              )}
             </div>
             <div className="mb-4">
               <div className="font-medium">{t('Email')}:</div>
               <div className="text-muted-foreground">{userEmail}</div>
             </div>
             <div className="mb-4">
-              <div className="font-medium">{t('Phone')}:</div>
-              <div className="text-muted-foreground">{userPhone}</div>
+              <div className="font-medium flex items-center justify-between">
+                {t('Phone')}:
+                {!isEditingPhone && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsEditingPhone(true)}
+                    className="h-6 w-6 p-0"
+                  >
+                    <Edit2 className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
+              {isEditingPhone ? (
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={editPhone}
+                    onChange={(e) => setEditPhone(e.target.value)}
+                    className="flex-1"
+                    placeholder="Enter your phone number"
+                  />
+                  <Button size="sm" onClick={handleSavePhone} className="h-8 px-2">
+                    <Save className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleCancelEdit('phone')}
+                    className="h-8 px-2"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="text-muted-foreground">{userPhone}</div>
+              )}
             </div>
             <div className="mb-4">
               <div className="font-medium">{t('Password')}:</div>

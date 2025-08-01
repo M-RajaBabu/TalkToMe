@@ -166,21 +166,21 @@ const NavBar = ({ showChangeLanguage = true, isLoggedIn }: { showChangeLanguage?
               to="/chat" 
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 group"
             >
-              <div className="w-2 h-2 bg-primary rounded-full group-hover:scale-150 transition-transform duration-300"></div>
+              <MessageSquare className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
               Chat
             </Link>
             <Link 
               to="/chapters" 
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 group"
             >
-              <div className="w-2 h-2 bg-secondary rounded-full group-hover:scale-150 transition-transform duration-300"></div>
+              <BookOpen className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
               Chapters
             </Link>
             <Link 
               to="/progress" 
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 group"
             >
-              <div className="w-2 h-2 bg-accent rounded-full group-hover:scale-150 transition-transform duration-300"></div>
+              <BarChart2 className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
               Progress
             </Link>
             
@@ -191,7 +191,7 @@ const NavBar = ({ showChangeLanguage = true, isLoggedIn }: { showChangeLanguage?
                   variant="ghost" 
                   className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 group"
                 >
-                  <div className="w-2 h-2 bg-purple-500 rounded-full group-hover:scale-150 transition-transform duration-300"></div>
+                  <Sparkles className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
                   Advanced
                   <ChevronDown className="w-3 h-3 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                 </Button>
@@ -258,7 +258,7 @@ const NavBar = ({ showChangeLanguage = true, isLoggedIn }: { showChangeLanguage?
                   variant="ghost" 
                   className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 group"
                 >
-                  <div className="w-2 h-2 bg-muted-foreground rounded-full group-hover:scale-150 transition-transform duration-300"></div>
+                  <Settings className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
                   Settings
                   <ChevronDown className="w-3 h-3 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                 </Button>
@@ -268,11 +268,18 @@ const NavBar = ({ showChangeLanguage = true, isLoggedIn }: { showChangeLanguage?
                 className="w-56 bg-background/95 backdrop-blur-sm border border-border/50 shadow-xl"
               >
                 <DropdownMenuItem asChild>
+                  <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
+                    <User className="w-4 h-4" />
+                    <span>Profile</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link to="/settings" className="flex items-center gap-2 cursor-pointer">
                     <Settings className="w-4 h-4" />
                     <span>Settings Page</span>
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem 
                   onClick={handleExportHistory}
                   className="flex items-center gap-2 cursor-pointer"
@@ -319,30 +326,143 @@ const NavBar = ({ showChangeLanguage = true, isLoggedIn }: { showChangeLanguage?
               to="/chat" 
               className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300"
             >
-              <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+              <MessageSquare className="w-4 h-4" />
               Chat
             </Link>
             <Link 
               to="/chapters" 
               className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300"
             >
-              <div className="w-1.5 h-1.5 bg-secondary rounded-full"></div>
+              <BookOpen className="w-4 h-4" />
               Chapters
             </Link>
             <Link 
               to="/progress" 
               className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300"
             >
-              <div className="w-1.5 h-1.5 bg-accent rounded-full"></div>
+              <BarChart2 className="w-4 h-4" />
               Progress
             </Link>
-            <Link 
-              to="/settings" 
-              className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300"
-            >
-              <div className="w-1.5 h-1.5 bg-muted-foreground rounded-full"></div>
-              Settings
-            </Link>
+            
+            {/* Advanced Features Dropdown for Mobile */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Advanced
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent 
+                align="center" 
+                className="w-48 bg-background/95 backdrop-blur-sm border border-border/50 shadow-xl"
+              >
+                <DropdownMenuItem asChild>
+                  <Link to="/ai-learning" className="flex items-center gap-2 cursor-pointer">
+                    <Sparkles className="w-4 h-4" />
+                    <span>AI Learning</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/mobile-experience" className="flex items-center gap-2 cursor-pointer">
+                    <Smartphone className="w-4 h-4" />
+                    <span>Mobile Experience</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/cultural-integration" className="flex items-center gap-2 cursor-pointer">
+                    <Globe className="w-4 h-4" />
+                    <span>Cultural Integration</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/learning-tools" className="flex items-center gap-2 cursor-pointer">
+                    <Brain className="w-4 h-4" />
+                    <span>Learning Tools</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/achievements" className="flex items-center gap-2 cursor-pointer">
+                    <Trophy className="w-4 h-4" />
+                    <span>Achievements</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/ai-conversation-partner" className="flex items-center gap-2 cursor-pointer">
+                    <User className="w-4 h-4" />
+                    <span>AI Conversation Partner</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/music-learning" className="flex items-center gap-2 cursor-pointer">
+                    <Music className="w-4 h-4" />
+                    <span>Music Learning</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/private-lessons" className="flex items-center gap-2 cursor-pointer">
+                    <GraduationCap className="w-4 h-4" />
+                    <span>Private Lessons</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
+            {/* Settings Dropdown for Mobile */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                >
+                  <Settings className="w-4 h-4" />
+                  Settings
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent 
+                align="center" 
+                className="w-48 bg-background/95 backdrop-blur-sm border border-border/50 shadow-xl"
+              >
+                <DropdownMenuItem asChild>
+                  <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
+                    <User className="w-4 h-4" />
+                    <span>Profile</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/settings" className="flex items-center gap-2 cursor-pointer">
+                    <Settings className="w-4 h-4" />
+                    <span>Settings Page</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={handleExportHistory}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <BarChart2 className="w-4 h-4" />
+                  <span>Export History</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={handleResetProgress}
+                  className="flex items-center gap-2 cursor-pointer text-orange-600 hover:text-orange-700"
+                >
+                  <div className="w-4 h-4 rounded-full bg-orange-500"></div>
+                  <span>Reset Progress</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 cursor-pointer text-destructive hover:text-destructive"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
       </div>
     </div>
       )}
