@@ -244,6 +244,63 @@
     .mobile-optimized {
       @apply px-4 py-6;
     }
+    
+    /* Mobile chat input improvements */
+    .chat-input-mobile {
+      font-size: 16px !important; /* Prevents zoom on iOS */
+      line-height: 1.5 !important;
+      padding: 12px 16px !important;
+    }
+    
+    /* Better text visibility on mobile */
+    .chat-textarea {
+      background: rgba(255, 255, 255, 0.95) !important;
+      backdrop-filter: blur(10px) !important;
+      border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .dark .chat-textarea {
+      background: rgba(0, 0, 0, 0.95) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+    
+    /* Enhanced mobile input focus */
+    .chat-input-focus {
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+      border-color: rgb(99, 102, 241) !important;
+    }
+    
+    /* Phone-specific improvements */
+    .phone-optimized {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* Larger touch targets for phones */
+    .phone-button {
+      min-height: 44px !important;
+      min-width: 44px !important;
+    }
+    
+    /* Better phone spacing */
+    .phone-spacing {
+      gap: 12px !important;
+      padding: 16px !important;
+    }
+    
+    /* Enhanced phone shadows */
+    .phone-shadow {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    /* Phone-specific animations */
+    .phone-tap {
+      transition: transform 0.1s ease !important;
+    }
+    
+    .phone-tap:active {
+      transform: scale(0.95) !important;
+    }
   }
 
   /* Custom scrollbar */

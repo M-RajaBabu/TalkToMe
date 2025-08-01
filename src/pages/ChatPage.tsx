@@ -458,16 +458,16 @@ const ChatPage = () => {
       </div>
 
       <div className="relative z-10 min-h-screen flex flex-col">
-        <div className="container max-w-2xl mx-auto flex-1 flex flex-col h-screen">
+        <div className="container max-w-2xl mx-auto flex-1 flex flex-col h-screen px-2 md:px-4">
           <ChatHeader 
             sourceLanguage={languagePreference.sourceLanguage} 
             targetLanguage={languagePreference.targetLanguage}
           />
           
           <div className="flex flex-col gap-4 flex-1">
-            {/* Mode Toggle with enhanced styling */}
-            <div className="flex justify-center px-4 pt-2">
-              <Card className="p-1 glass-effect">
+            {/* Mode Toggle with enhanced styling - Phone Optimized */}
+            <div className="flex justify-center px-2 md:px-4 pt-2">
+              <Card className="p-1 glass-effect border-2 border-border/50">
                 <ToggleGroup 
                   type="single" 
                   value={chatMode} 
@@ -476,24 +476,24 @@ const ChatPage = () => {
                 >
                   <ToggleGroupItem 
                     value="chat" 
-                    className="flex items-center gap-2 px-4 py-2 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground rounded-md transition-all duration-300"
+                    className="flex items-center gap-2 px-3 md:px-4 py-2.5 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground rounded-lg transition-all duration-300 font-medium"
                   >
-                    <MessageSquare className="w-4 h-4" />
+                    <MessageSquare className="w-4 h-4 md:w-5 md:h-5" />
                     Chat
                   </ToggleGroupItem>
                   <ToggleGroupItem 
                     value="translate" 
-                    className="flex items-center gap-2 px-4 py-2 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground rounded-md transition-all duration-300"
+                    className="flex items-center gap-2 px-3 md:px-4 py-2.5 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground rounded-lg transition-all duration-300 font-medium"
                   >
-                    <Languages className="w-4 h-4" />
+                    <Languages className="w-4 h-4 md:w-5 md:h-5" />
                     Translate
                   </ToggleGroupItem>
                 </ToggleGroup>
               </Card>
             </div>
 
-            {/* Messages Container */}
-            <div className="flex-1 overflow-y-auto px-4 space-y-4 pb-4">
+            {/* Messages Container - Phone Optimized */}
+            <div className="flex-1 overflow-y-auto px-2 md:px-4 space-y-3 md:space-y-4 pb-4">
               {messages.map((message, index) => (
                 <div 
                   key={message.id} 
@@ -540,8 +540,8 @@ const ChatPage = () => {
               <div ref={messagesEndRef} />
             </div>
             
-            {/* Enhanced Input Area */}
-            <div className="p-4 border-t border-border/50 bg-background/80 backdrop-blur-sm">
+            {/* Enhanced Input Area - Mobile Optimized */}
+            <div className="p-3 md:p-4 border-t border-border/50 bg-background/95 backdrop-blur-sm sticky bottom-0 z-20">
               <ChatInput
                 onSendMessage={handleSendMessage}
                 onVoiceInput={handleVoiceInput}

@@ -15,7 +15,8 @@ import {
   Lightbulb,
   BookOpen,
   Target,
-  Zap
+  Zap,
+  X
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -38,7 +39,7 @@ const getSmartSuggestions = (context: string, targetLanguage: string) => {
       "German": ["Hallo!", "Wie geht es dir?", "Guten Tag!"],
       "Hindi": ["नमस्ते! कैसे हो?", "सुप्रभात", "क्या हाल है?"],
       "Telugu": ["నమస్కారం! మీరు ఎలా ఉన్నారు?", "శుభోదయం", "మీరు ఎలా ఉన్నారు?"],
-      "Kannada": ["ನಮಸ್ಕಾರ! ನೀವು ಹೇಗಿದ್ದೀರಿ?", "ಶುಭೋದಯ", "ನೀವು ಹೇಗಿದ್ದೀರಿ?"],
+      "Kannada": ["ನಮಸ್ಕಾರ! ನೀವು ಹೇಗಿದ್ದೀರಿ?", "ಶుಭోದಯ", "ನೀವು ಹೇಗಿದ್ದೀರಿ?"],
       "Tamil": ["வணக்கம்! நீங்கள் எப்படி இருக்கிறீர்கள்?", "காலை வணக்கம்", "நீங்கள் எப்படி இருக்கிறீர்கள்?"],
       "English": ["Hello! How are you?", "Good morning", "What's up?"]
     },
@@ -208,8 +209,18 @@ const ChatInput = ({
   const [grammarCorrections, setGrammarCorrections] = useState<any[]>([]);
   const [pronunciationTips, setPronunciationTips] = useState<any[]>([]);
   const [showAI, setShowAI] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
+
+  // Auto-resize textarea with better mobile handling
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      const newHeight = Math.min(textareaRef.current.scrollHeight, 150);
+      textareaRef.current.style.height = newHeight + 'px';
+    }
+  }, [message]);
 
   // Generate suggestions when message changes
   useEffect(() => {
@@ -237,6 +248,10 @@ const ChatInput = ({
       setShowSuggestions(false);
       setGrammarCorrections([]);
       setPronunciationTips([]);
+      // Reset textarea height
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+      }
     }
   };
 
@@ -265,10 +280,17 @@ const ChatInput = ({
     }
   };
 
+  const clearMessage = () => {
+    setMessage("");
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
+  };
+
   return (
-    <div className="space-y-4">
-      {/* AI Features Toggle */}
-      <div className="flex items-center justify-between">
+    <div className="space-y-3">
+      {/* AI Features Toggle - Hidden on mobile for space */}
+      <div className="hidden md:flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
@@ -288,64 +310,82 @@ const ChatInput = ({
         </div>
       </div>
 
-      {/* AI Features Panel */}
+      {/* Mobile Language Badge - Enhanced */}
+      <div className="md:hidden flex justify-center">
+        <Badge variant="outline" className="flex items-center gap-1 text-xs px-3 py-1 bg-background/80 backdrop-blur-sm">
+          <Target className="w-3 h-3" />
+          {targetLanguage}
+        </Badge>
+      </div>
+
+      {/* AI Features Panel - Mobile Optimized */}
       {showAI && (
-        <Card className="modern-card p-4 space-y-3">
-          <div className="flex items-center gap-2 text-sm font-medium">
-            <Lightbulb className="w-4 h-4 text-yellow-500" />
-            AI Learning Assistant
+        <Card className="modern-card p-3 md:p-4 space-y-3 max-h-48 overflow-y-auto border-2 border-primary/20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <Lightbulb className="w-4 h-4 text-yellow-500" />
+              AI Assistant
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowAI(false)}
+              className="h-6 w-6 p-0"
+            >
+              <X className="w-3 h-3" />
+            </Button>
           </div>
           
-          {/* Smart Suggestions */}
+          {/* Smart Suggestions - Mobile Optimized */}
           {showSuggestions && suggestions.length > 0 && (
             <div className="space-y-2">
-              <div className="text-xs text-muted-foreground">Smart Suggestions:</div>
-              <div className="flex flex-wrap gap-2">
-                {suggestions.slice(0, 3).map((suggestion, index) => (
+              <div className="text-xs text-muted-foreground font-medium">💡 Smart Suggestions:</div>
+              <div className="flex flex-wrap gap-1.5">
+                {suggestions.slice(0, 2).map((suggestion, index) => (
                   <Button
                     key={index}
                     variant="outline"
                     size="sm"
                     onClick={() => handleSuggestionClick(suggestion)}
-                    className="text-xs h-auto py-1 px-2"
+                    className="text-xs h-auto py-2 px-3 text-left bg-primary/5 hover:bg-primary/10 border-primary/20"
                   >
-                    {suggestion}
+                    {suggestion.length > 25 ? suggestion.substring(0, 25) + '...' : suggestion}
                   </Button>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Grammar Corrections */}
+          {/* Grammar Corrections - Mobile Optimized */}
           {grammarCorrections.length > 0 && (
             <div className="space-y-2">
-              <div className="text-xs text-muted-foreground flex items-center gap-1">
+              <div className="text-xs text-muted-foreground flex items-center gap-1 font-medium">
                 <CheckCircle className="w-3 h-3 text-green-500" />
                 Grammar Tips:
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 {grammarCorrections.map((correction, index) => (
-                  <div key={index} className="text-xs bg-green-50 dark:bg-green-950/50 p-2 rounded">
-                    <span className="text-green-600 dark:text-green-400">
+                  <div key={index} className="text-xs bg-green-50 dark:bg-green-950/50 p-2.5 rounded-lg border border-green-200 dark:border-green-800">
+                    <span className="text-green-600 dark:text-green-400 font-medium">
                       {correction.message}
-          </span>
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Pronunciation Tips */}
+          {/* Pronunciation Tips - Mobile Optimized */}
           {pronunciationTips.length > 0 && (
             <div className="space-y-2">
-              <div className="text-xs text-muted-foreground flex items-center gap-1">
+              <div className="text-xs text-muted-foreground flex items-center gap-1 font-medium">
                 <Volume2 className="w-3 h-3 text-blue-500" />
                 Pronunciation Tips:
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 {pronunciationTips.map((tip, index) => (
-                  <div key={index} className="text-xs bg-blue-50 dark:bg-blue-950/50 p-2 rounded">
-                    <span className="font-medium">{tip.sound}:</span> {tip.tip}
+                  <div key={index} className="text-xs bg-blue-50 dark:bg-blue-950/50 p-2.5 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <span className="font-medium text-blue-600 dark:text-blue-400">{tip.sound}:</span> {tip.tip}
                   </div>
                 ))}
               </div>
@@ -354,78 +394,132 @@ const ChatInput = ({
         </Card>
       )}
 
-      {/* Main Input Area */}
-      <Card className="modern-card p-4">
-        <div className="flex items-end gap-3">
-          {/* Mode Toggle */}
-          <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+      {/* Main Input Area - Phone Optimized */}
+      <Card className={cn(
+        "modern-card p-3 md:p-4 transition-all duration-300 phone-optimized phone-shadow",
+        isFocused && "ring-2 ring-primary/30 shadow-xl",
+        "border-2 border-border/50"
+      )}>
+        <div className="flex items-end gap-2 md:gap-3">
+          {/* Mode Toggle - Phone Optimized */}
+          <div className="flex items-center gap-1 bg-muted/80 rounded-xl p-1.5">
             <Button
               variant={mode === "text" ? "default" : "ghost"}
               size="sm"
               onClick={() => setMode("text")}
-              className="h-8 px-3"
+              className="h-10 px-3 md:px-4 rounded-lg font-medium phone-button phone-tap"
             >
-              <BookOpen className="w-4 h-4" />
+              <BookOpen className="w-4 h-4 md:w-5 md:h-5" />
             </Button>
             <Button
               variant={mode === "voice" ? "default" : "ghost"}
               size="sm"
               onClick={handleVoiceToggle}
-              className="h-8 px-3"
+              className="h-10 px-3 md:px-4 rounded-lg font-medium phone-button phone-tap"
             >
-              {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              {isListening ? <MicOff className="w-4 h-4 md:w-5 md:h-5" /> : <Mic className="w-4 h-4 md:w-5 md:h-5" />}
             </Button>
-      </div>
+          </div>
       
-          {/* Text Input */}
-          <div className="flex-1">
-          <Textarea
+          {/* Enhanced Text Input - Phone Optimized */}
+          <div className="flex-1 relative">
+            <Textarea
               ref={textareaRef}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               onKeyPress={handleKeyPress}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
               placeholder={
                 mode === "text" 
                   ? `Type your message in ${targetLanguage}...` 
-                  : "Click the microphone to start voice input"
+                  : "Tap the microphone to start voice input"
               }
-              className="min-h-[60px] resize-none border-0 focus:ring-0 bg-transparent"
+              className={cn(
+                "min-h-[70px] md:min-h-[80px] resize-none border-0 focus:ring-0 bg-transparent",
+                "text-base md:text-lg leading-relaxed",
+                "placeholder:text-muted-foreground/70 placeholder:font-medium",
+                "transition-all duration-200",
+                "chat-input-mobile chat-textarea",
+                isFocused && "chat-input-focus"
+              )}
               disabled={mode === "voice" || isProcessing}
             />
+            
+            {/* Clear Button - Phone Optimized */}
+            {message.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearMessage}
+                className="absolute top-2 right-2 h-6 w-6 p-0 opacity-60 hover:opacity-100"
+              >
+                <X className="w-3 h-3" />
+              </Button>
+            )}
+            
+            {/* Character count - Phone Optimized */}
+            <div className="absolute bottom-2 right-2 text-xs text-muted-foreground/60 font-medium">
+              {message.length}/500
+            </div>
           </div>
 
-          {/* Send Button */}
+          {/* Enhanced Send Button - Phone Optimized */}
           <Button
             onClick={handleSend}
             disabled={!message.trim() || isProcessing || mode === "voice"}
-            className="h-10 w-10 p-0"
+            className={cn(
+              "h-12 w-12 md:h-14 md:w-14 p-0 transition-all duration-200 rounded-xl phone-button phone-tap",
+              "hover:scale-105 active:scale-95",
+              "shadow-lg hover:shadow-xl",
+              "bg-gradient-to-r from-primary to-primary/90",
+              "disabled:opacity-50 disabled:scale-100"
+            )}
           >
             {isProcessing ? (
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <div className="w-5 h-5 md:w-6 md:h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
-              <Send className="w-4 h-4" />
+              <Send className="w-5 h-5 md:w-6 md:h-6" />
             )}
           </Button>
         </div>
 
-        {/* Voice Input Status */}
+        {/* Voice Input Status - Phone Optimized */}
         {mode === "voice" && (
-          <div className="mt-3 flex items-center gap-2 text-sm">
+          <div className="mt-4 flex items-center justify-center gap-3 text-sm bg-muted/50 rounded-lg p-3">
             {isListening ? (
               <>
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                <span className="text-red-600 dark:text-red-400">Listening...</span>
+                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                <span className="text-red-600 dark:text-red-400 font-semibold">Listening...</span>
+                <div className="flex gap-1">
+                  <div className="w-1 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                  <div className="w-1 h-5 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-1 h-4 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                </div>
               </>
             ) : (
               <>
-                <Mic className="w-4 h-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Click microphone to start</span>
+                <Mic className="w-5 h-5 text-muted-foreground" />
+                <span className="text-muted-foreground font-medium">Tap microphone to start</span>
               </>
             )}
+          </div>
+        )}
+
+        {/* Mobile AI Toggle - Phone Optimized */}
+        <div className="md:hidden mt-4 flex justify-center">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowAI(!showAI)}
+            className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg"
+          >
+            <Sparkles className="w-4 h-4" />
+            {showAI ? "Hide AI Assistant" : "Show AI Assistant"}
+          </Button>
         </div>
-      )}
       </Card>
-        </div>
+    </div>
   );
 };
 
