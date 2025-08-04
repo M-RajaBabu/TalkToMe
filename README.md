@@ -324,6 +324,19 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - **MongoDB Atlas** for reliable cloud database
 - **Vercel & Render** for seamless deployment
 
+## 🌐 Connect With Me
+
+<div align="center">
+
+**Let's connect and collaborate!** 🤝
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Raja%20Babu%20Meena-0A66C2?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/rajababumeena/)
+[![GitHub](https://img.shields.io/badge/GitHub-M--RajaBabu-181717?style=for-the-badge&logo=github)](https://github.com/M-RajaBabu/TalkToMe)
+[![Instagram](https://img.shields.io/badge/Instagram-raja__babu__meena-E4405F?style=for-the-badge&logo=instagram)](https://www.instagram.com/raja_babu_meena/)
+[![Twitter](https://img.shields.io/badge/Twitter-RBMRAJA-1DA1F2?style=for-the-badge&logo=twitter)](https://x.com/RBMRAJA)
+
+</div>
+
 ---
 
 <div align="center">
