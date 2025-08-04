@@ -239,17 +239,59 @@
     animation: scale-pulse 2s ease-in-out infinite;
   }
 
-  /* Responsive improvements */
+  /* Mobile Keyboard Handling - Comprehensive Solution */
   @media (max-width: 768px) {
-    .mobile-optimized {
-      @apply px-4 py-6;
+    /* Prevent viewport issues on mobile */
+    html, body {
+      height: 100%;
+      overflow-x: hidden;
+      position: fixed;
+      width: 100%;
     }
-    
+
+    /* Mobile chat container with keyboard handling */
+    .mobile-chat-container {
+      height: 100vh;
+      height: 100dvh; /* Dynamic viewport height */
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Messages area that adjusts to keyboard */
+    .mobile-messages-area {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 0;
+      transition: padding-bottom 0.3s ease;
+    }
+
+    /* Input area that stays above keyboard */
+    .mobile-input-area {
+      position: sticky;
+      bottom: 0;
+      background: hsl(var(--background));
+      border-top: 1px solid hsl(var(--border));
+      padding: 12px 16px;
+      padding-bottom: calc(12px + env(safe-area-inset-bottom));
+      z-index: 50;
+      transition: transform 0.3s ease;
+    }
+
+    /* When keyboard is visible */
+    .keyboard-visible .mobile-input-area {
+      transform: translateY(0);
+    }
+
     /* Mobile chat input improvements */
     .chat-input-mobile {
       font-size: 16px !important; /* Prevents zoom on iOS */
       line-height: 1.5 !important;
       padding: 12px 16px !important;
+      min-height: 44px !important; /* iOS minimum touch target */
+      max-height: 120px !important; /* Limit height on mobile */
+      resize: none !important;
     }
     
     /* Better text visibility on mobile */
@@ -257,6 +299,8 @@
       background: rgba(255, 255, 255, 0.95) !important;
       backdrop-filter: blur(10px) !important;
       border: 1px solid rgba(0, 0, 0, 0.1) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
     }
     
     .dark .chat-textarea {
@@ -268,18 +312,22 @@
     .chat-input-focus {
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
       border-color: rgb(99, 102, 241) !important;
+      transform: scale(1.02) !important;
     }
     
     /* Phone-specific improvements */
     .phone-optimized {
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      user-select: none;
     }
     
     /* Larger touch targets for phones */
     .phone-button {
       min-height: 44px !important;
       min-width: 44px !important;
+      border-radius: 12px !important;
     }
     
     /* Better phone spacing */
@@ -300,6 +348,215 @@
     
     .phone-tap:active {
       transform: scale(0.95) !important;
+    }
+
+    /* Mobile keyboard detection and handling */
+    .mobile-optimized {
+      @apply px-4 py-6;
+    }
+
+    /* Safe area handling for notched devices */
+    .safe-area-bottom {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* Mobile-specific chat bubble adjustments */
+    .mobile-chat-bubble {
+      max-width: 85% !important;
+      margin-bottom: 8px !important;
+    }
+
+    /* Mobile header adjustments */
+    .mobile-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: hsl(var(--background));
+      border-bottom: 1px solid hsl(var(--border));
+      padding: 12px 16px;
+      padding-top: calc(12px + env(safe-area-inset-top));
+    }
+
+    /* Mobile mode toggle adjustments */
+    .mobile-mode-toggle {
+      margin: 8px 16px;
+      border-radius: 12px;
+    }
+
+    /* Mobile AI panel adjustments */
+    .mobile-ai-panel {
+      max-height: 200px !important;
+      overflow-y: auto !important;
+      margin-bottom: 8px !important;
+    }
+
+    /* Mobile send button adjustments */
+    .mobile-send-button {
+      width: 56px !important;
+      height: 56px !important;
+      border-radius: 16px !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .mobile-send-button:hover {
+      transform: scale(1.05) !important;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .mobile-send-button:active {
+      transform: scale(0.95) !important;
+    }
+
+    /* Mobile voice button adjustments */
+    .mobile-voice-button {
+      width: 48px !important;
+      height: 48px !important;
+      border-radius: 12px !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .mobile-voice-button:hover {
+      transform: scale(1.05) !important;
+    }
+
+    .mobile-voice-button:active {
+      transform: scale(0.95) !important;
+    }
+
+    /* Mobile textarea container */
+    .mobile-textarea-container {
+      flex: 1;
+      margin: 0 8px;
+      position: relative;
+    }
+
+    /* Mobile textarea styling */
+    .mobile-textarea-container .chat-textarea {
+      background: rgba(255, 255, 255, 0.95) !important;
+      backdrop-filter: blur(10px) !important;
+      border: 1px solid rgba(0, 0, 0, 0.1) !important;
+      border-radius: 16px !important;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .dark .mobile-textarea-container .chat-textarea {
+      background: rgba(0, 0, 0, 0.95) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .mobile-textarea-container .chat-textarea:focus {
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05), 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+      border-color: rgb(99, 102, 241) !important;
+      transform: scale(1.02) !important;
+    }
+
+    /* Mobile clear button */
+    .mobile-clear-button {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease !important;
+    }
+
+    .mobile-clear-button:hover {
+      background: rgba(0, 0, 0, 0.2) !important;
+      transform: scale(1.1) !important;
+    }
+
+    .dark .mobile-clear-button {
+      background: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .dark .mobile-clear-button:hover {
+      background: rgba(255, 255, 255, 0.2) !important;
+    }
+
+    /* Mobile character count */
+    .mobile-char-count {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      font-size: 10px;
+      color: hsl(var(--muted-foreground));
+      background: rgba(255, 255, 255, 0.9);
+      padding: 4px 8px;
+      border-radius: 12px;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .dark .mobile-char-count {
+      background: rgba(0, 0, 0, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Enhanced mobile input area */
+    .mobile-input-area {
+      background: linear-gradient(to top, hsl(var(--background)), hsl(var(--background) / 0.95)) !important;
+      backdrop-filter: blur(20px) !important;
+      border-top: 1px solid hsl(var(--border) / 0.5) !important;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Mobile mode toggle container */
+    .mobile-mode-toggle-container {
+      background: linear-gradient(135deg, hsl(var(--muted) / 0.8), hsl(var(--muted) / 0.6)) !important;
+      backdrop-filter: blur(10px) !important;
+      border: 1px solid hsl(var(--border) / 0.3) !important;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    /* Mobile voice status indicator */
+    .mobile-voice-status {
+      background: linear-gradient(135deg, hsl(var(--muted) / 0.6), hsl(var(--muted) / 0.4)) !important;
+      backdrop-filter: blur(10px) !important;
+      border: 1px solid hsl(var(--border) / 0.3) !important;
+      border-radius: 16px !important;
+    }
+
+    /* Mobile AI toggle button */
+    .mobile-ai-toggle {
+      background: linear-gradient(135deg, hsl(var(--primary) / 0.1), hsl(var(--primary) / 0.05)) !important;
+      border: 2px solid hsl(var(--primary) / 0.2) !important;
+      backdrop-filter: blur(10px) !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .mobile-ai-toggle:hover {
+      background: linear-gradient(135deg, hsl(var(--primary) / 0.15), hsl(var(--primary) / 0.1)) !important;
+      border-color: hsl(var(--primary) / 0.4) !important;
+      transform: translateY(-1px) !important;
+    }
+
+    /* Enhanced mobile animations */
+    .mobile-tap-feedback {
+      transition: transform 0.1s ease !important;
+    }
+
+    .mobile-tap-feedback:active {
+      transform: scale(0.95) !important;
+    }
+
+    /* Mobile input focus effects */
+    .mobile-input-focus {
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+      border-color: rgb(99, 102, 241) !important;
+      transform: scale(1.02) !important;
+    }
+
+    /* Mobile gradient backgrounds */
+    .mobile-gradient-bg {
+      background: linear-gradient(135deg, hsl(var(--background) / 0.95), hsl(var(--background) / 0.9)) !important;
+      backdrop-filter: blur(20px) !important;
     }
   }
 

@@ -320,7 +320,7 @@ const ChatInput = ({
 
       {/* AI Features Panel - Mobile Optimized */}
       {showAI && (
-        <Card className="modern-card p-3 md:p-4 space-y-3 max-h-48 overflow-y-auto border-2 border-primary/20">
+        <Card className="modern-card p-3 md:p-4 space-y-3 max-h-48 overflow-y-auto border-2 border-primary/20 mobile-ai-panel">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-medium">
               <Lightbulb className="w-4 h-4 text-yellow-500" />
@@ -398,69 +398,72 @@ const ChatInput = ({
       <Card className={cn(
         "modern-card p-3 md:p-4 transition-all duration-300 phone-optimized phone-shadow",
         isFocused && "ring-2 ring-primary/30 shadow-xl",
-        "border-2 border-border/50"
+        "border-2 border-border/50",
+        "bg-gradient-to-r from-background/95 to-background/90 backdrop-blur-md mobile-gradient-bg"
       )}>
         <div className="flex items-end gap-2 md:gap-3">
           {/* Mode Toggle - Phone Optimized */}
-          <div className="flex items-center gap-1 bg-muted/80 rounded-xl p-1.5">
+          <div className="flex items-center gap-1 bg-muted/80 rounded-xl p-1.5 shadow-inner mobile-mode-toggle-container">
             <Button
               variant={mode === "text" ? "default" : "ghost"}
               size="sm"
               onClick={() => setMode("text")}
-              className="h-10 px-3 md:px-4 rounded-lg font-medium phone-button phone-tap"
+              className="h-12 px-4 md:px-5 rounded-lg font-medium phone-button phone-tap mobile-voice-button transition-all duration-200"
             >
-              <BookOpen className="w-4 h-4 md:w-5 md:h-5" />
+              <BookOpen className="w-5 h-5 md:w-6 md:h-6" />
             </Button>
             <Button
               variant={mode === "voice" ? "default" : "ghost"}
               size="sm"
               onClick={handleVoiceToggle}
-              className="h-10 px-3 md:px-4 rounded-lg font-medium phone-button phone-tap"
+              className="h-12 px-4 md:px-5 rounded-lg font-medium phone-button phone-tap mobile-voice-button transition-all duration-200"
             >
-              {isListening ? <MicOff className="w-4 h-4 md:w-5 md:h-5" /> : <Mic className="w-4 h-4 md:w-5 md:h-5" />}
+              {isListening ? <MicOff className="w-5 h-5 md:w-6 md:h-6" /> : <Mic className="w-5 h-5 md:w-6 md:h-6" />}
             </Button>
           </div>
       
           {/* Enhanced Text Input - Phone Optimized */}
-          <div className="flex-1 relative">
-            <Textarea
-              ref={textareaRef}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-              placeholder={
-                mode === "text" 
-                  ? `Type your message in ${targetLanguage}...` 
-                  : "Tap the microphone to start voice input"
-              }
-              className={cn(
-                "min-h-[70px] md:min-h-[80px] resize-none border-0 focus:ring-0 bg-transparent",
-                "text-base md:text-lg leading-relaxed",
-                "placeholder:text-muted-foreground/70 placeholder:font-medium",
-                "transition-all duration-200",
-                "chat-input-mobile chat-textarea",
-                isFocused && "chat-input-focus"
+          <div className="flex-1 relative mobile-textarea-container">
+            <div className="relative bg-background/80 backdrop-blur-sm rounded-xl border border-border/50 shadow-inner">
+              <Textarea
+                ref={textareaRef}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                placeholder={
+                  mode === "text" 
+                    ? `Type your message in ${targetLanguage}...` 
+                    : "Tap the microphone to start voice input"
+                }
+                className={cn(
+                  "min-h-[80px] md:min-h-[90px] resize-none border-0 focus:ring-0 bg-transparent",
+                  "text-base md:text-lg leading-relaxed px-4 py-3",
+                  "placeholder:text-muted-foreground/70 placeholder:font-medium",
+                  "transition-all duration-200 rounded-xl",
+                  "chat-input-mobile chat-textarea",
+                  isFocused && "chat-input-focus"
+                )}
+                disabled={mode === "voice" || isProcessing}
+              />
+              
+              {/* Clear Button - Phone Optimized */}
+              {message.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearMessage}
+                  className="absolute top-3 right-3 h-8 w-8 p-0 opacity-70 hover:opacity-100 mobile-clear-button transition-all duration-200"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
               )}
-              disabled={mode === "voice" || isProcessing}
-            />
-            
-            {/* Clear Button - Phone Optimized */}
-            {message.length > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearMessage}
-                className="absolute top-2 right-2 h-6 w-6 p-0 opacity-60 hover:opacity-100"
-              >
-                <X className="w-3 h-3" />
-              </Button>
-            )}
-            
-            {/* Character count - Phone Optimized */}
-            <div className="absolute bottom-2 right-2 text-xs text-muted-foreground/60 font-medium">
-              {message.length}/500
+              
+              {/* Character count - Phone Optimized */}
+              <div className="absolute bottom-3 right-3 text-xs text-muted-foreground/60 font-medium mobile-char-count">
+                {message.length}/500
+              </div>
             </div>
           </div>
 
@@ -469,32 +472,33 @@ const ChatInput = ({
             onClick={handleSend}
             disabled={!message.trim() || isProcessing || mode === "voice"}
             className={cn(
-              "h-12 w-12 md:h-14 md:w-14 p-0 transition-all duration-200 rounded-xl phone-button phone-tap",
+              "h-14 w-14 md:h-16 md:w-16 p-0 transition-all duration-200 rounded-xl phone-button phone-tap mobile-send-button",
               "hover:scale-105 active:scale-95",
               "shadow-lg hover:shadow-xl",
-              "bg-gradient-to-r from-primary to-primary/90",
-              "disabled:opacity-50 disabled:scale-100"
+              "bg-gradient-to-r from-primary to-primary/90 hover:from-primary/80 hover:to-primary/70",
+              "disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed",
+              "flex items-center justify-center"
             )}
           >
             {isProcessing ? (
-              <div className="w-5 h-5 md:w-6 md:h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <div className="w-6 h-6 md:w-7 md:h-7 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
-              <Send className="w-5 h-5 md:w-6 md:h-6" />
+              <Send className="w-6 h-6 md:w-7 md:h-7" />
             )}
           </Button>
         </div>
 
         {/* Voice Input Status - Phone Optimized */}
         {mode === "voice" && (
-          <div className="mt-4 flex items-center justify-center gap-3 text-sm bg-muted/50 rounded-lg p-3">
+          <div className="mt-4 flex items-center justify-center gap-3 text-sm bg-muted/50 rounded-lg p-4 border border-border/30 mobile-voice-status">
             {isListening ? (
               <>
-                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                <div className="w-4 h-4 bg-red-500 rounded-full animate-pulse" />
                 <span className="text-red-600 dark:text-red-400 font-semibold">Listening...</span>
                 <div className="flex gap-1">
-                  <div className="w-1 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                  <div className="w-1 h-5 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                  <div className="w-1 h-4 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                  <div className="w-1 h-4 bg-red-500 rounded-full animate-pulse"></div>
+                  <div className="w-1 h-6 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-1 h-5 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
                 </div>
               </>
             ) : (
@@ -512,7 +516,7 @@ const ChatInput = ({
             variant="outline"
             size="sm"
             onClick={() => setShowAI(!showAI)}
-            className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg"
+            className="flex items-center gap-2 text-sm font-medium px-6 py-3 rounded-xl border-2 border-primary/20 hover:border-primary/40 transition-all duration-200 mobile-ai-toggle"
           >
             <Sparkles className="w-4 h-4" />
             {showAI ? "Hide AI Assistant" : "Show AI Assistant"}

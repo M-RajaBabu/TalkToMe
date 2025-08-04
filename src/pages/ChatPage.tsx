@@ -39,6 +39,67 @@ const ChatPage = () => {
   const [isListening, setIsListening] = useState(false);
   const [chatMode, setChatMode] = useState<'chat' | 'translate'>('chat');
   
+  // Mobile keyboard handling
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  // Handle mobile keyboard visibility
+  useEffect(() => {
+    const handleResize = () => {
+      const newHeight = window.innerHeight;
+      const heightDifference = viewportHeight - newHeight;
+      
+      // If height decreased significantly, keyboard is likely visible
+      if (heightDifference > 150) {
+        setIsKeyboardVisible(true);
+        document.body.classList.add('keyboard-visible');
+      } else if (heightDifference < 50) {
+        setIsKeyboardVisible(false);
+        document.body.classList.remove('keyboard-visible');
+      }
+      
+      setViewportHeight(newHeight);
+    };
+
+    const handleVisualViewport = () => {
+      if (window.visualViewport) {
+        const keyboardHeight = window.innerHeight - window.visualViewport.height;
+        const isVisible = keyboardHeight > 150;
+        setIsKeyboardVisible(isVisible);
+        
+        if (isVisible) {
+          document.body.classList.add('keyboard-visible');
+        } else {
+          document.body.classList.remove('keyboard-visible');
+        }
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('visualviewportchange', handleVisualViewport);
+    
+    // Initial check
+    handleVisualViewport();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('visualviewportchange', handleVisualViewport);
+    };
+  }, [viewportHeight]);
+  
   // Auth check - redirect if not logged in
   useEffect(() => {
     const email = localStorage.getItem('userEmail');
@@ -60,32 +121,15 @@ const ChatPage = () => {
     }
     
     try {
-      const parsedPreference = JSON.parse(storedPreference) as LanguagePreference;
-      setLanguagePreference(parsedPreference);
-      
-      // Set initial welcome message based on target language
-      const welcomeMessage = getWelcomeMessage(parsedPreference.targetLanguage);
-      setMessages([
-        {
-          id: uuidv4(),
-          type: "ai",
-          content: welcomeMessage.content,
-          grammarFeedback: "",
-          vocabularyTips: welcomeMessage.vocabularyTips || "",
-          romanization: welcomeMessage.romanization,
-          timestamp: new Date(),
-        }
-      ]);
-      
-      // Load chat history if user is authenticated
-      if (userEmail) {
-        loadChatHistory(parsedPreference);
-      }
+      const preference: LanguagePreference = JSON.parse(storedPreference);
+      setLanguagePreference(preference);
+      loadChatHistory(preference);
+      loadUserStreak();
     } catch (error) {
-      console.error("Error parsing language preference:", error);
+      console.error('Error loading language preference:', error);
       navigate('/language-selection');
     }
-  }, [navigate, userEmail]);
+  }, [navigate]);
   
   // Load chat history from backend
   const loadChatHistory = async (preference: LanguagePreference) => {
@@ -450,7 +494,7 @@ const ChatPage = () => {
   }
 
   return (
-    <div className="min-h-screen gradient-bg relative">
+    <div className={`${isMobile ? 'mobile-chat-container' : 'min-h-screen'} gradient-bg relative`}>
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 right-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl floating-animation"></div>
@@ -459,15 +503,18 @@ const ChatPage = () => {
 
       <div className="relative z-10 min-h-screen flex flex-col">
         <div className="container max-w-2xl mx-auto flex-1 flex flex-col h-screen px-2 md:px-4">
-          <ChatHeader 
-            sourceLanguage={languagePreference.sourceLanguage} 
-            targetLanguage={languagePreference.targetLanguage}
-          />
+          {/* Mobile Header */}
+          <div className={isMobile ? 'mobile-header' : ''}>
+            <ChatHeader 
+              sourceLanguage={languagePreference.sourceLanguage} 
+              targetLanguage={languagePreference.targetLanguage}
+            />
+          </div>
           
           <div className="flex flex-col gap-4 flex-1">
             {/* Mode Toggle with enhanced styling - Phone Optimized */}
             <div className="flex justify-center px-2 md:px-4 pt-2">
-              <Card className="p-1 glass-effect border-2 border-border/50">
+              <Card className={`p-1 glass-effect border-2 border-border/50 ${isMobile ? 'mobile-mode-toggle' : ''}`}>
                 <ToggleGroup 
                   type="single" 
                   value={chatMode} 
@@ -493,11 +540,11 @@ const ChatPage = () => {
             </div>
 
             {/* Messages Container - Phone Optimized */}
-            <div className="flex-1 overflow-y-auto px-2 md:px-4 space-y-3 md:space-y-4 pb-4">
+            <div className={`flex-1 overflow-y-auto px-2 md:px-4 space-y-3 md:space-y-4 pb-4 ${isMobile ? 'mobile-messages-area' : ''}`}>
               {messages.map((message, index) => (
                 <div 
                   key={message.id} 
-                  className={`slide-in-bottom`}
+                  className={`slide-in-bottom ${isMobile ? 'mobile-chat-bubble' : ''}`}
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <ChatBubble 
@@ -541,7 +588,7 @@ const ChatPage = () => {
             </div>
             
             {/* Enhanced Input Area - Mobile Optimized */}
-            <div className="p-3 md:p-4 border-t border-border/50 bg-background/95 backdrop-blur-sm sticky bottom-0 z-20">
+            <div className={`${isMobile ? 'mobile-input-area safe-area-bottom' : 'p-3 md:p-4 border-t border-border/50 bg-background/95 backdrop-blur-sm sticky bottom-0 z-20'}`}>
               <ChatInput
                 onSendMessage={handleSendMessage}
                 onVoiceInput={handleVoiceInput}
